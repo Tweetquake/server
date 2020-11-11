@@ -12,7 +12,7 @@ def greet(name='Stranger'):
 def start():
     return static_file('map.html' , root="../client/")
 
-@route('/')
+@route('/client/map.js')
 def start():
     return static_file('map.js', root="../client/")
 
