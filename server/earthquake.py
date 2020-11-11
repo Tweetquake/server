@@ -1,4 +1,4 @@
-from bottle import route, run, template
+from bottle import route, run, template, static_file
 
 @route('/hello')
 def hello():
@@ -10,32 +10,11 @@ def greet(name='Stranger'):
 
 @route('/')
 def start():
-    return '''
-        <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Intro to MapView - Create a 2D map</title>
-    <style>
-        html,
-        body,
-        #viewDiv {
-            padding: 0;
-            margin: 0;
-            height: 100%;
-            width: 100%;
-        }
-    </style>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css" />
-    <script src="https://js.arcgis.com/4.17/"></script>
-    <script src="../client/map.js"></script>
-</head>
-<body>
-    <div id="viewDiv"></div>
-</body>
-</html>
+    return static_file('map.html' , root="../client/")
 
-    '''
+@route('/')
+def start():
+    return static_file('map.js', root="../client/")
+
 
 run(host='localhost', port=8080, debug=True)
