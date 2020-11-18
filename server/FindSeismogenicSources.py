@@ -13,7 +13,7 @@ class SeismogenicSources:
     def find_candidate_sources(self, polygons):
         # load the composite seismologic sources from the shapefile 'CSSPLN321.shp''
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        file_seism = 'data/INGV/ISS321.shp'
+        file_seism = 'legacy/data/INGV/ISS321.shp'
         vector_seism = driver.Open(file_seism, 0)
         layer_seism = vector_seism.GetLayer(0)
 

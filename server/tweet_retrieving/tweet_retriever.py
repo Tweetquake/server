@@ -1,11 +1,13 @@
-from queue import Empty
+from queue import Queue
 import tweepy
+
 
 class Stream2Queue(tweepy.StreamListener):
     '''
     Stream listener used to store tweet coordinates in a queue
     '''
-    def __init__(self, queue, tweet_processor, api=None):
+
+    def __init__(self, queue, api=None):
         '''
 
         @param queue: queue to store coords
@@ -14,7 +16,6 @@ class Stream2Queue(tweepy.StreamListener):
         '''
         self.api = api or tweepy.API()
         self.tweets = queue
-        self.processor = tweet_processor
 
     def on_status(self, status):
         '''
@@ -23,13 +24,10 @@ class Stream2Queue(tweepy.StreamListener):
         @param status: tweepy status
         @return:
         '''
-        coords = self.processor.gimme_coords(status)
-        if coords is not None:
-            self.tweets.put(coords)
+        self.tweets.put(status)
 
 
-
-def keys(name):
+def __keys(name):
     '''
     @param name: API key (string)
     @return: API value (string)
@@ -40,19 +38,17 @@ def keys(name):
                 'TwitTOKSEC': '24qRoFKDHiQb8D7tbhMdY56KBm8wYIWpDngBoLW0IgaqV'}
     return keychain[name]
 
-def get_tweets_coords(queue, tweet_processor,  words_to_track=['a'], user=None):
-    '''
-    function using tweepy to retrieve italian tweets
-    @param queue: used to store coords
-    @param tweet_processor: object implementing tweetProcessorIF interface
-    @param words_to_track: array of strings
-    @param user: array of strings
-    @return:
-    '''
-    auth = tweepy.OAuthHandler(keys('TwitKEY'), keys('TwitSECRET'))
-    auth.set_access_token(keys('TwitTOKEN'), keys('TwitTOKSEC'))
-    api = tweepy.API(auth)
 
-    screen = Stream2Queue(queue, tweet_processor)
+def __get_API():
+    auth = tweepy.OAuthHandler(__keys('TwitKEY'), __keys('TwitSECRET'))
+    auth.set_access_token(__keys('TwitTOKEN'), __keys('TwitTOKSEC'))
+    return tweepy.API(auth)
+
+
+def put_tweets_in_queue_RT(queue: Queue, words_to_track=['a'], languages=['it'], user=None):
+
+    api = __get_API()
+
+    screen = Stream2Queue(queue)
     stream = tweepy.streaming.Stream(api.auth, screen)
-    stream.filter(track=words_to_track, languages=['it'], follow=user)
+    stream.filter(track=words_to_track, languages=languages, follow=user)

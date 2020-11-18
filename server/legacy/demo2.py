@@ -21,8 +21,8 @@ def INGV_coord_producer(queue_tweets=dataQueue):
     @param queue_tweets: data queue where tweets coords are stored
     @return:
     '''
-    tweet_retreiver.get_tweets_coords(queue_tweets, tweetProcessorIF.INGVTweetProcessor(),
-                                      words_to_track=['STIMA #PROVVISORIA'], user=['121049123'])
+    tweet_retreiver.put_tweets_in_queue_RT(queue_tweets, tweetProcessorIF.INGVTweetProcessor(),
+                                           words_to_track=['STIMA #PROVVISORIA'], user=['121049123'])
 
 def generic_tweet_coord_producer(queue_tweets=dataQueue):
     '''
@@ -31,8 +31,8 @@ def generic_tweet_coord_producer(queue_tweets=dataQueue):
     @param queue_tweets: data queue where tweets coords are stored
     @return:
     '''
-    tweet_retreiver.get_tweets_coords(queue_tweets, tweetProcessorIF.genericTweetProcessor(),
-                                      words_to_track=['terremoto'])
+    tweet_retreiver.put_tweets_in_queue_RT(queue_tweets, tweetProcessorIF.genericTweetProcessor(),
+                                           words_to_track=['terremoto'])
 
 # Function called by the consumer threads
 def consumer(queue_tweets=dataQueue):

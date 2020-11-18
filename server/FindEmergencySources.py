@@ -18,7 +18,7 @@ class EmergencySources:
         buf = source_polygon.Buffer(0.5)
 
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        file_italy = 'data/capitals/capoluoghi_provincia_2019.shp'
+        file_italy = 'legacy/data/capitals/capoluoghi_provincia_2019.shp'
         vector_italy = driver.Open(file_italy, 0)
         layer_italy = vector_italy.GetLayer(0)
 

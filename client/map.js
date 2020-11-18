@@ -85,4 +85,5 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
         // Add widget to the bottom right corner of the view
         view.ui.add(layerList, "bottom-right");
     });
+    view.padding.left = 320;
 });
