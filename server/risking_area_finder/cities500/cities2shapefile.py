@@ -28,7 +28,7 @@ def cityStr2Dict(cityStr):
 
 if __name__ == '__main__':
 
-    path = './cities500_IT.shp'
+    path = 'cities500_IT.shp'
     drvName = "ESRI Shapefile"
     driver = ogr.GetDriverByName(drvName)
 
