@@ -6,7 +6,7 @@ class earthquake_faults_finder:
         self.polygons_buffer = polygons_buffer
 
     def find_candidate_faults(self, polygons):
-        candidatesCount, candidates = self.find_all_candidate_faults(polygons)
+        candidatesCount, candidates = self.__find_all_candidate_faults(polygons)
         if (self.maximum_number_of_faults == 0):
             n_candidates = candidates
         else:
@@ -16,7 +16,7 @@ class earthquake_faults_finder:
         # saveGeometriesAsGEOJSON('seismogenicSources', n_candidates)
         return n_candidates
 
-    def find_all_candidate_faults(self, polygons):
+    def __find_all_candidate_faults(self, polygons):
         # load the composite seismologic sources from the shapefile 'CSSPLN321.shp''
         driver = ogr.GetDriverByName("ESRI Shapefile")
         file_seism = 'INGV/ISS321.shp'
@@ -27,7 +27,7 @@ class earthquake_faults_finder:
         candidates_count = {}
         candidates = []
         for polygon in polygons:
-            sources = self.find_nearest_faults(polygon, layer_seism)
+            sources = self.__find_nearest_faults(polygon, layer_seism)
             for source in sources:
                 sourceID = source.GetField(0)
                 if sourceID in candidates_count:
@@ -42,7 +42,7 @@ class earthquake_faults_finder:
         sorted_candidates_count = sorted(candidates_count.items(), key=lambda x: x[1], reverse=True)
         return sorted_candidates_count, candidates
 
-    def find_nearest_faults(self, polygon, layer_seism):
+    def __find_nearest_faults(self, polygon, layer_seism):
 
         area = polygon.Buffer(self.polygons_buffer)
 
