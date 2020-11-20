@@ -20,8 +20,8 @@ class tweet_earthquake_SA(object):
         if so it loads their states
         otherwise it initializes two new one
         '''
-        self.classifier_path = './SVM_state/classifier.pkl'
-        self.vectorizer_path = './SVM_state/vectorizer.pkl'
+        self.classifier_path = 'tweet_earthquake_sentiment_analisys_data/SVM_state/classifier.pkl'
+        self.vectorizer_path = 'tweet_earthquake_sentiment_analisys_data/SVM_state/vectorizer.pkl'
         if get_existing and \
                 os.path.isfile(self.classifier_path) and \
                 os.path.isfile(self.vectorizer_path):
@@ -67,7 +67,8 @@ if __name__ == "__main__":
     '''
     execute this to train a new classifier
     '''
-    data = pd.read_csv("earthquake_sentiment_analysis_dataset/earthquake_dataset_SA.csv")
+    data = pd.read_csv(
+        "tweet_earthquake_sentiment_analisys_data/earthquake_sentiment_analysis_dataset/earthquake_dataset_SA.csv")
 
     train_data, test_data = train_test_split(data, test_size=0.9)
 
