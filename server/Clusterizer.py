@@ -14,27 +14,23 @@ class Clusterizer(object):
     It also calculates a convex hull for each cluster.
     """
 
-    def __init__(self, point_list):
+    def __init__(self):
         """
         @param point_list: n x 2 array or numpy array representing
         lat/lon coordinates of each point. For each point, the first
         component must be longitude meanwhile, the second must be latitude
         """
-        if type(point_list) is np.ndarray:
-            self.points = point_list
-        else:
-            self.points = np.array(point_list)
         self.total_clusters = 0
         self.cluster_points = None
         self.cluster_hulls = None
 
-    def calculate_clusters(self):
+    def __calculate_clusters(self, point_list: np.array, eps=0.5, min_samples=1):
         """
         calculates and saves clusters using DBSCAN
         """
         scaler = StandardScaler()
-        X = scaler.fit_transform(self.points)
-        db = DBSCAN(eps=0.5, min_samples=1).fit(X)
+        X = scaler.fit_transform(point_list)
+        db = DBSCAN(eps=eps, min_samples=min_samples).fit(X)
         X = scaler.inverse_transform(X)
         core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
         core_samples_mask[db.core_sample_indices_] = True
@@ -49,23 +45,7 @@ class Clusterizer(object):
         self.cluster_points = cluster_points
         self.total_clusters = n_clusters_
 
-    def plot_clusters(self):
-        """
-        draws cluster points. To show this you have to call Clusterizer.show_plots()
-        @return:
-        """
-        n_clusters = self.total_clusters
-        colors = [plt.cm.Spectral(each)
-                  for each in np.linspace(0, 1, n_clusters)]
-
-        for k, col in zip(range(n_clusters), colors):
-            xy = np.array(self.cluster_points[k])
-            plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-                     markeredgecolor='k', markersize=14)
-
-        plt.title('Estimated number of clusters: %d' % n_clusters)
-
-    def clusters2hulls(self):
+    def __clusters2hulls(self):
         """
         calculates a convex hull for each cluster.
         @return:
@@ -84,31 +64,14 @@ class Clusterizer(object):
                 bufPoints = []
                 for i in range(boundary.GetPointCount()):
                     x, y, not_needed = boundary.GetPoint(i)
-                    bufPoints.append([x,y])
+                    bufPoints.append([x, y])
                 hull = ConvexHull(bufPoints)
             '''else:
                 self.total_clusters = self.total_clusters-1'''
             hulls.append(hull)
         self.cluster_hulls = hulls
 
-    def plot_cluster_hulls(self):
-        """
-         draws cluster hulls. To show this you have to call Clusterizer.show_plots()
-        @return:
-        """
-        for i in range(self.total_clusters):
-            hull = self.cluster_hulls[i]
-            points_in_cluster = hull.points
-            for simplex in hull.simplices:
-                plt.plot(points_in_cluster[simplex, 0], points_in_cluster[simplex, 1], 'b')
-
-    def get_cluster_points(self):
-        return self.cluster_points.copy()
-
-    def get_cluster_hulls(self):
-        return self.cluster_hulls.copy()
-
-    def export_cluster_hulls_as_GDAL_poly(self):
+    def __get_cluster_hulls_as_GDAL_poly(self):
         """
 
         @return: an array containing a GDAL polygon for each cluster
@@ -127,44 +90,81 @@ class Clusterizer(object):
             for i in range(len(x)):
                 ring.AddPoint(x[i], y[i])
             # close the polygon
-            ring.AddPoint(x[0],y[0])
+            ring.AddPoint(x[0], y[0])
 
             poly = ogr.Geometry(ogr.wkbPolygon)
             poly.AddGeometry(ring)
             gdhulls.append(poly)
         return gdhulls
 
+    def get_cluster_points(self):
+        return self.cluster_points.copy()
+
+    def get_cluster_hulls(self):
+        return self.cluster_hulls.copy()
+
+    def plot_clusters(self):
+        """
+        draws cluster points. To show this you have to call Clusterizer.show_plots()
+        @return:
+        """
+        n_clusters = self.total_clusters
+        colors = [plt.cm.Spectral(each)
+                  for each in np.linspace(0, 1, n_clusters)]
+
+        for k, col in zip(range(n_clusters), colors):
+            xy = np.array(self.cluster_points[k])
+            plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+                     markeredgecolor='k', markersize=14)
+
+        plt.title('Estimated number of clusters: %d' % n_clusters)
+
+    def plot_cluster_hulls(self):
+        """
+         draws cluster hulls. To show this you have to call Clusterizer.show_plots()
+        @return:
+        """
+        for i in range(self.total_clusters):
+            hull = self.cluster_hulls[i]
+            points_in_cluster = hull.points
+            for simplex in hull.simplices:
+                plt.plot(points_in_cluster[simplex, 0], points_in_cluster[simplex, 1], 'b')
 
     def show_plots(self):
         plt.show()
+
+    def get_concentrated_areas(self, point_list: np.array, eps=0.5, min_samples=1):
+        self.__calculate_clusters(point_list, eps, min_samples)
+        self.__clusters2hulls()
+        return self.__get_cluster_hulls_as_GDAL_poly()
 
 
 if __name__ == '__main__':
     # Generate sample data
     from sklearn.datasets import make_blobs
 
-    centers = [ [13.33799,42.29093],
-               [12.51133,41.89193], [13.69901,42.66123], [14.20283,42.4584]]
+    centers = [
+        [13.33799, 42.29093],
+        [12.51133, 41.89193],
+        [13.69901, 42.66123],
+        [14.20283, 42.4584]
+    ]
     X, labels_true = make_blobs(n_samples=200, centers=centers, cluster_std=0.1,
                                 random_state=0)
 
     # use example
 
-    cluster = Clusterizer(X)
+    cluster = Clusterizer()
 
-    cluster.calculate_clusters()
+    gdal_hulls = cluster.get_concentrated_areas(X, 0.2, 5)
     cluster.plot_clusters()
 
-
-    cluster.clusters2hulls()
     cluster.plot_cluster_hulls()
-
 
     cluster.show_plots()
 
     hulls = cluster.get_cluster_hulls()
     points = cluster.get_cluster_points()
-    gdal_hulls = cluster.export_cluster_hulls_as_GDAL_poly()
     print(points)
     print(hulls)
     for gdhull in gdal_hulls:
