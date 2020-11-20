@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from osgeo import ogr
 
 
-class Clusterizer(object):
+class point_clusterizer(object):
     """
     This class calculates clusters from a list of geographic
     points splitting them into lists. For each cluster, non meaningful
@@ -24,7 +24,7 @@ class Clusterizer(object):
         self.cluster_points = None
         self.cluster_hulls = None
 
-    def __calculate_clusters(self, point_list: np.array, eps=0.5, min_samples=1):
+    def __calculate_clusters(self, point_list, eps, min_samples):
         """
         calculates and saves clusters using DBSCAN
         """
@@ -133,7 +133,7 @@ class Clusterizer(object):
     def show_plots(self):
         plt.show()
 
-    def get_concentrated_areas(self, point_list: np.array, eps=0.5, min_samples=1):
+    def get_concentrated_areas(self, point_list: np.array, eps=0.5, min_samples=5):
         self.__calculate_clusters(point_list, eps, min_samples)
         self.__clusters2hulls()
         return self.__get_cluster_hulls_as_GDAL_poly()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
     # use example
 
-    cluster = Clusterizer()
+    cluster = point_clusterizer()
 
     gdal_hulls = cluster.get_concentrated_areas(X, 0.2, 5)
     cluster.plot_clusters()
