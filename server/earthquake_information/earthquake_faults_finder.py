@@ -144,7 +144,7 @@ class earthquake_faults_finder:
     def __find_all_candidate_faults(self, polygons):
         # load the composite seismologic sources from the shapefile 'CSSPLN321.shp''
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        file_seism = 'INGV/ISS321.shp'
+        file_seism = 'server/earthquake_information/INGV/ISS321.shp'
         vector_seism = driver.Open(file_seism, 0)
         layer_seism = vector_seism.GetLayer(0)
 
