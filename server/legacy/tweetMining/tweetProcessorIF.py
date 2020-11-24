@@ -54,7 +54,7 @@ class genericTweetProcessor(tweetProcessorIF):
     '''
     def __init__(self):
         super().__init__()
-        self.SA = earthquake_detector.tweet_earthquake_SA()
+        self.SA = earthquake_detector.TweetEarthquakeSA()
     def gimme_coords(self, tweet):
         '''
 

@@ -7,13 +7,13 @@ class Stream2Queue(tweepy.StreamListener):
     Stream listener used to store tweet coordinates in a queue
     '''
 
-    def __init__(self, queue, api=None):
+    def __init__(self, queue: Queue, api=None):
         '''
 
         @param queue: queue to store coords
-        @param tweet_processor: object implementing tweetProcessorIF interface
         @param api: API to use
         '''
+        super().__init__(api)
         self.api = api or tweepy.API()
         self.tweets = queue
 
@@ -45,8 +45,12 @@ def __get_API():
     return tweepy.API(auth)
 
 
-def put_tweets_in_queue_RT(queue: Queue, words_to_track=['a'], languages=['it'], user=None):
+def put_tweets_in_queue_rt(queue: Queue, words_to_track=None, languages=None, user=None):
 
+    if languages is None:
+        languages = ['it']
+    if words_to_track is None:
+        words_to_track = ['a']
     api = __get_API()
 
     screen = Stream2Queue(queue)

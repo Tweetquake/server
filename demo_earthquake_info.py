@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # actual test
     # We calculate clusters from points and export them as Polygons
-    clusterizer = earthquake_faults_finder.point_clusterizer()
+    clusterizer = earthquake_faults_finder.PointClusterizer()
     clusters_as_polygons = clusterizer.get_concentrated_areas(X)
 
     # We find the earthquake affected area

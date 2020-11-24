@@ -1,4 +1,4 @@
-import _pickle as cPickle
+from _pickle import load, dump
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
@@ -8,7 +8,45 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 
 
-class tweet_earthquake_SA(object):
+def get_tweet_text(tweet):
+    if hasattr(tweet, "retweeted_status"):  # Check if Retweet
+        try:
+            text = tweet.retweeted_status.extended_tweet["full_text"]
+        except AttributeError:
+            text = tweet.retweeted_status.text
+    else:
+        try:
+            text = tweet.extended_tweet["full_text"]
+        except AttributeError:
+            text = tweet.text
+    return text
+
+
+class TweetFilter(object):
+    def __init__(self):
+        self.sentiment_analysis = TweetEarthquakeSA()
+
+    def __get_by_label(self, tweets: [], label: str):
+        tweet_texts = []
+        for tweet in tweets:
+            tweet_texts.append(get_tweet_text(tweet))
+        labels = self.sentiment_analysis.predict(tweet_texts)
+        filtered_tweets = []
+        for i in range(len(labels)):
+            if labels[i] is label:
+                filtered_tweets.append(tweets[i])
+        return filtered_tweets
+
+    def get_all_positives(self, tweets: []):
+        positive_tweets = self.__get_by_label(tweets=tweets, label='pos')
+        return positive_tweets
+
+    def get_all_negatives(self, tweets: []):
+        negative_tweets = self.__get_by_label(tweets=tweets, label='neg')
+        return negative_tweets
+
+
+class TweetEarthquakeSA(object):
     '''
     used to check if a tweet talks about an earthquake happening now or not
     using sentiment analysis
@@ -27,10 +65,10 @@ class tweet_earthquake_SA(object):
                 os.path.isfile(self.vectorizer_path):
 
             with open(self.classifier_path, 'rb') as fid:
-                self.classifier = cPickle.load(fid)
+                self.classifier = load(fid)
 
             with open(self.vectorizer_path, 'rb') as fid:
-                self.vectorizer = cPickle.load(fid)
+                self.vectorizer = load(fid)
         else:
             self.classifier = svm.SVC(kernel='linear', C=3.3, gamma='auto')
             self.vectorizer = TfidfVectorizer(min_df=5,
@@ -48,16 +86,17 @@ class tweet_earthquake_SA(object):
         self.classifier.fit(train_vectors, train_data['Label'])
         if save_to_file:
             with open(self.classifier_path, 'wb') as fid:
-                cPickle.dump(self.classifier, fid)
+                dump(self.classifier, fid)
             with open(self.vectorizer_path, 'wb') as fid:
-                cPickle.dump(self.vectorizer, fid)
+                dump(self.vectorizer, fid)
 
-    def predict(self, data: pd.DataFrame):
+    def predict(self, data: []):
         '''
 
         @param data: pandas csv with labels 'Content' (tweet), 'Label'
         @return: array of labels
         '''
+        data = pd.DataFrame(data, columns=['Content'])
         test_vectors = self.vectorizer.transform(data)
         labels = self.classifier.predict(test_vectors)
         return labels
@@ -72,7 +111,7 @@ if __name__ == "__main__":
 
     train_data, test_data = train_test_split(data, test_size=0.9)
 
-    detector = tweet_earthquake_SA()
+    detector = TweetEarthquakeSA()
     detector.train(train_data=train_data, save_to_file=True)
     predictions = detector.predict(test_data['Content'])
     report = classification_report(test_data['Label'], predictions, output_dict=True)

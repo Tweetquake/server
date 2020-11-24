@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from osgeo import ogr
 
 
-class point_clusterizer(object):
+class PointClusterizer(object):
     """
     This class calculates clusters from a list of geographic
     points splitting them into lists. For each cluster, non meaningful
@@ -69,7 +69,7 @@ class point_clusterizer(object):
             hulls.append(hull)
         self.__cluster_hulls = hulls
 
-    def __get_cluster_hulls_as_GDAL_poly(self):
+    def __get_cluster_hulls_as_gdal_poly(self):
         """
 
         @return: an array containing a GDAL polygon for each cluster
@@ -101,16 +101,16 @@ class point_clusterizer(object):
     def get_min_samples(self):
         return self.__min_samples
 
-    def set_eps(self, eps):
+    def set_eps(self, eps: float):
         self.__eps = eps
 
-    def set_min_samples(self,min_samples):
+    def set_min_samples(self, min_samples: int):
         self.__min_samples = min_samples
 
     def get_concentrated_areas(self, point_list: np.array):
         self.__calculate_clusters(point_list)
         self.__clusters2hulls()
-        return self.__get_cluster_hulls_as_GDAL_poly()
+        return self.__get_cluster_hulls_as_gdal_poly()
 
 
 class earthquake_faults_finder:
