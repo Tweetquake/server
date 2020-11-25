@@ -113,10 +113,16 @@ class PointClusterizer(object):
         return self.__get_cluster_hulls_as_gdal_poly()
 
 
-class earthquake_faults_finder:
+class EarthquakeFaultsFinder:
+    """
+       This class finds the possible earthquake faults from a list
+       of GDAL polygons which represent the clusters of the sensors.
+       It is possible to set a maximum number of possible faults.
+       """
     def __init__(self, max_faults=0, polygons_buffer=0.7):
         self.__maximum_number_of_faults = max_faults
         self.__polygons_buffer = polygons_buffer
+        self.__possible_faults = []
 
     def get_maximum_number_of_faults(self):
         return self.__maximum_number_of_faults
@@ -125,21 +131,25 @@ class earthquake_faults_finder:
         return self.__polygons_buffer
 
     def set_maximum_number_of_faults(self, max_faults: int):
-        self.__maximum_number_of_faults = max_faults
+        if max_faults>0:
+            self.__maximum_number_of_faults = max_faults
 
-    def set_polygons_buffer(self, polygons_buffer: int):
-        self.__polygons_buffer = polygons_buffer
+    def set_polygons_buffer(self, polygons_buffer: float):
+        if polygons_buffer>0:
+            self.__polygons_buffer = polygons_buffer
 
     def find_candidate_faults(self, polygons):
-        candidatesCount, candidates = self.__find_all_candidate_faults(polygons)
+        candidates_count, candidates = self.__find_all_candidate_faults(polygons)
+        for i in range(0, len(candidates_count)):
+            fault = EarthquakeFault(candidates[i], candidates_count[i])
+            self.add_faults(fault)
         if self.__maximum_number_of_faults == 0:
-            n_candidates = candidates
+            faults = self.__possible_faults
         else:
-            n_candidates = []
-            for i in range(0, min(self.__maximum_number_of_faults, len(candidatesCount))):
-                n_candidates.append(candidates[i])
-        # saveGeometriesAsGEOJSON('seismogenicSources', n_candidates)
-        return n_candidates
+            faults = []
+            for i in range(0, min(self.__maximum_number_of_faults, len(candidates_count))):
+                faults.append(self.__possible_faults[i])
+        return faults
 
     def __find_all_candidate_faults(self, polygons):
         # load the composite seismologic sources from the shapefile 'CSSPLN321.shp''
@@ -182,6 +192,22 @@ class earthquake_faults_finder:
 
         return faults
 
+    def add_faults(self, fault):
+        self.__possible_faults.append(fault)
+
+class EarthquakeFault:
+    '''
+    This class define a possible earthquake faults.
+    Since it is not possible to know for sure which fault
+    generated the earthquake, every possible faults have a probability.
+    '''
+    def __init__(self, gdal_geometry , probability):
+        self.geometry= gdal_geometry
+        self.probability = probability
+
+    def __set_probability(self, prob):
+        if prob>0:
+            self.__probability = prob
 
 if __name__ == '__main__':
     '''
@@ -198,11 +224,11 @@ if __name__ == '__main__':
     polygon4 = ogr.CreateGeometryFromWkt(p4)
     polygons = [polygon1, polygon2, polygon3, polygon4]
 
-    maxFaults = 3  # maximum number of possible earthquake faults
+    max_faults = 3  # maximum number of possible earthquake faults
 
-    faultsfinder = earthquake_faults_finder(maxFaults)
+    faultsfinder = EarthquakeFaultsFinder(max_faults)
     faults = faultsfinder.find_candidate_faults(polygons)
 
-    print(faults)
     for fault in faults:
-        print(fault)
+        print(fault.geometry)
+
