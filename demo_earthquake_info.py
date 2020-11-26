@@ -22,11 +22,11 @@ if __name__ == "__main__":
     faults = faults_finder.find_candidate_faults(clusters_as_polygons)
 
     for fault in faults:
-        print(fault.geometry)
+        print(fault.get_geometry())
 
     poly_faults = []
     for fault in faults:
-        poly_faults.append(fault.geometry)
+        poly_faults.append(fault.get_geometry())
 
     riskfinder = risking_area_finder.RiskingAreaFinder()
     area = riskfinder.find_risking_area(poly_faults)

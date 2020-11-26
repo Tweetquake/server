@@ -119,6 +119,7 @@ class EarthquakeFaultsFinder:
        of GDAL polygons which represent the clusters of the sensors.
        It is possible to set a maximum number of possible faults.
        """
+
     def __init__(self, max_faults=0, polygons_buffer=0.7):
         self.__maximum_number_of_faults = max_faults
         self.__polygons_buffer = polygons_buffer
@@ -131,11 +132,11 @@ class EarthquakeFaultsFinder:
         return self.__polygons_buffer
 
     def set_maximum_number_of_faults(self, max_faults: int):
-        if max_faults>0:
+        if max_faults > 0:
             self.__maximum_number_of_faults = max_faults
 
     def set_polygons_buffer(self, polygons_buffer: float):
-        if polygons_buffer>0:
+        if polygons_buffer > 0:
             self.__polygons_buffer = polygons_buffer
 
     def find_candidate_faults(self, polygons):
@@ -195,19 +196,28 @@ class EarthquakeFaultsFinder:
     def add_faults(self, fault):
         self.__possible_faults.append(fault)
 
+
 class EarthquakeFault:
     '''
     This class define a possible earthquake faults.
     Since it is not possible to know for sure which fault
     generated the earthquake, every possible faults have a probability.
     '''
-    def __init__(self, gdal_geometry , probability):
-        self.geometry= gdal_geometry
-        self.probability = probability
 
-    def __set_probability(self, prob):
-        if prob>0:
+    def __init__(self, gdal_geometry, probability):
+        self.__geometry = gdal_geometry
+        self.__probability = probability
+
+    def set_probability(self, prob):
+        if prob > 0:
             self.__probability = prob
+
+    def get_geometry(self):
+        return self.__geometry
+
+    def get_probability(self):
+        return self.__probability
+
 
 if __name__ == '__main__':
     '''
@@ -230,5 +240,4 @@ if __name__ == '__main__':
     faults = faultsfinder.find_candidate_faults(polygons)
 
     for fault in faults:
-        print(fault.geometry)
-
+        print(fault.get_geometry())

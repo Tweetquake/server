@@ -5,6 +5,7 @@ class RiskingAreaFinder:
     def __init__(self, faultsBuffer=0.3):
         self.faultsBuffer = faultsBuffer
 
+    # todo use class EarthquakeFaults
     def find_risking_area(self, faults):
         union = ogr.Geometry(ogr.wkbPolygon)
 
@@ -18,6 +19,8 @@ class RiskingAreaFinder:
     def find_cities_at_risk(self):
         # Todo: searching cities at risk with cities500
         return 1
+
+    # todo make class RiskingArea and Municipality (comuni)
 
 if __name__ == '__main__':
     '''
