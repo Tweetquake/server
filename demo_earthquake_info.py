@@ -18,13 +18,17 @@ if __name__ == "__main__":
 
     # We find the earthquake affected area
     max_faults = 3  # maximum number of possible earthquake faults
-    faults_finder = earthquake_faults_finder.earthquake_faults_finder(max_faults)
+    faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder(max_faults)
     faults = faults_finder.find_candidate_faults(clusters_as_polygons)
 
     for fault in faults:
-        print(fault)
+        print(fault.geometry)
 
-    riskfinder = risking_area_finder.risking_area_finder()
-    area = riskfinder.find_risking_area(faults)
+    poly_faults = []
+    for fault in faults:
+        poly_faults.append(fault.geometry)
+
+    riskfinder = risking_area_finder.RiskingAreaFinder()
+    area = riskfinder.find_risking_area(poly_faults)
 
     print(area)
