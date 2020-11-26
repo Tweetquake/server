@@ -14,14 +14,12 @@ def get_tweets_in_queue(tweets: Queue):
 def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
     tweet_filter = TweetFilter()
     while True:
-        sleep(1)
         tweet_array = []
+        # blocks until the queue is not empty
+        tweet_array.append(tweets.get())
+        # checks if queue has more than 1 tweet
         while not tweets.empty():
-            try:
-                tweet_array.append(tweets.get())
-            except queue.Empty:
-                pass
+            tweet_array.append(tweets.get())
         positives = tweet_filter.get_all_positives(tweet_array)
         for positive in positives:
             filtered_tweets.put(positive)
-

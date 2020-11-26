@@ -6,9 +6,10 @@ import os.path
 
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+from tweepy import Status
 
 
-def get_tweet_text(tweet):
+def get_tweet_text(tweet: Status):
     if hasattr(tweet, "retweeted_status"):  # Check if Retweet
         try:
             text = tweet.retweeted_status.extended_tweet["full_text"]
@@ -20,6 +21,43 @@ def get_tweet_text(tweet):
         except AttributeError:
             text = tweet.text
     return text
+
+
+def get_tweet_geom(tweet: Status):
+    if tweet.coordinates is not None:
+        geom = tweet.coordinates
+    elif tweet.place is not None:
+        # we have to take the coords in the bounding_box
+        box = tweet.place.bounding_box.coordinates
+        # we take the first one in bbox, it could be improved in the future
+        geom = box[0][0]
+    else:
+        geom = None
+    return geom
+
+
+class TweetUsefulInfos(object):
+    def __init__(self, tweet_status: Status):
+        self.__text = get_tweet_text(tweet_status)
+        self.__author = tweet_status.author.name
+        self.__geometry = get_tweet_geom(tweet_status)
+        self.__place = tweet_status.place
+        self.__time_posted = tweet_status.created_at
+
+    def get_text(self):
+        return self.__text
+
+    def get_author(self):
+        return self.__author
+
+    def get_coordinates(self):
+        return self.__coordinates
+
+    def get_place(self):
+        return self.__place
+
+    def time_posted(self):
+        return self.__time_posted
 
 
 class TweetFilter(object):
@@ -47,19 +85,19 @@ class TweetFilter(object):
 
 
 class TweetEarthquakeSA(object):
-    '''
+    """
     used to check if a tweet talks about an earthquake happening now or not
     using sentiment analysis
-    '''
+    """
 
     def __init__(self, get_existing=True):
-        '''
+        """
         checks if a SVM and a corresponding vectorizer exists.
         if so it loads their states
         otherwise it initializes two new one
-        '''
-        self.classifier_path = 'tweet_earthquake_sentiment_analisys_data/SVM_state/classifier.pkl'
-        self.vectorizer_path = 'tweet_earthquake_sentiment_analisys_data/SVM_state/vectorizer.pkl'
+        """
+        self.classifier_path = 'tweet_earthquake_sentiment_analysis_data/SVM_state/classifier.pkl'
+        self.vectorizer_path = 'tweet_earthquake_sentiment_analysis_data/SVM_state/vectorizer.pkl'
         if get_existing and \
                 os.path.isfile(self.classifier_path) and \
                 os.path.isfile(self.vectorizer_path):
@@ -107,7 +145,7 @@ if __name__ == "__main__":
     execute this to train a new classifier
     '''
     data = pd.read_csv(
-        "tweet_earthquake_sentiment_analisys_data/earthquake_sentiment_analysis_dataset/earthquake_dataset_SA.csv")
+        "tweet_earthquake_sentiment_analysis_data/earthquake_sentiment_analysis_dataset/earthquake_dataset_SA.csv")
 
     train_data, test_data = train_test_split(data, test_size=0.9)
 
