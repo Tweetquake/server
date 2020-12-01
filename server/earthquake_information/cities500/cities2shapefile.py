@@ -41,7 +41,7 @@ if __name__ == '__main__':
     layer.CreateField(new_field)  # self explaining
     new_field = ogr.FieldDefn('population', ogr.OFTString)  # we will create a new field called Hometown as String
     layer.CreateField(new_field)  # self explaining
-    new_field = ogr.FieldDefn('code', ogr.OFTString)  # we will create a new field called Hometown as String
+    new_field = ogr.FieldDefn('country', ogr.OFTString)  # we will create a new field called Hometown as String
     layer.CreateField(new_field)  # self explaining
     new_field = ogr.FieldDefn('province', ogr.OFTString)  # we will create a new field called Hometown as String
     layer.CreateField(new_field)  # self explaining
@@ -64,11 +64,11 @@ if __name__ == '__main__':
                 feature = layer.GetFeature(i)
                 name = feature.GetFieldIndex("name")
                 population = feature.GetFieldIndex("population")
-                feature_code = feature.GetFieldIndex("code")
+                country_code = feature.GetFieldIndex("country")
                 province = feature.GetFieldIndex("province")
                 feature.SetField(name, city['name'])
                 feature.SetField(population, city['population'])
-                feature.SetField(feature_code, city['feature code'])
+                feature.SetField(country_code, city['country code'])
                 feature.SetField(province, city['admin2 code'])
                 layer.SetFeature(feature)
                 print(city['name'])
