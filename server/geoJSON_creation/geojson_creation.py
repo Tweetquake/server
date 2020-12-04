@@ -7,7 +7,7 @@ def object_list_to_geojson_file(filename, object_list):
         # Create the output Driver
         outDriver = ogr.GetDriverByName('GeoJSON')
         outDataSource = outDriver.CreateDataSource(file_path)
-        outLayer = outDataSource.CreateLayer(file_path, geom_type=object_list[0].get_geometry().GetGeometryType())
+        outLayer = outDataSource.CreateLayer(filename, geom_type=object_list[0].get_geometry().GetGeometryType())
 
         # Get the output Layer's Feature Definition
         featureDefn = outLayer.GetLayerDefn()
