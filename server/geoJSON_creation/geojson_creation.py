@@ -2,7 +2,7 @@ from osgeo import ogr
 
 def object_list_to_geojson_file(filename, object_list):
     if object_list:
-        file_path = 'server/geojson_creation/geojson_data\\' + str(filename) + '.geojson'
+        file_path = 'server/geoJSON_creation/geojson_data\\' + str(filename) + '.geojson'
         # Create the output Driver
         outDriver = ogr.GetDriverByName('GeoJSON')
         outDataSource = outDriver.CreateDataSource(file_path)
