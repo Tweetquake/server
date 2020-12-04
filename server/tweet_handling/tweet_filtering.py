@@ -50,8 +50,8 @@ class TweetUsefulInfos(object):
     def get_author(self):
         return self.__author
 
-    def get_coordinates(self):
-        return self.__coordinates
+    def get_geometry(self):
+        return self.__geometry
 
     def get_place(self):
         return self.__place
