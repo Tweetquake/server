@@ -29,16 +29,16 @@ class RiskingAreaFinder:
         srs_italy = layer_italy.GetSpatialRef()
         target_osr = osr.SpatialReference()
         target_osr.ImportFromEPSG(32632)  # SRS of UTM 32N
-        transform = osr.CoordinateTransformation(srs_italy, target_osr)
+
 
         earthquake_population = 0
         for feature in layer_italy:
             geom = feature.GetGeometryRef()
-            geom.Transform(transform)
+            #geom.Transform(transform)
             if geom.Within(area):
                 name_id = feature.GetFieldIndex("name")
                 population_id = feature.GetFieldIndex("population")
-                country_code_id = feature.GetFieldIndex("country code")
+                country_code_id = feature.GetFieldIndex("country")
                 province_id = feature.GetFieldIndex("province")
                 name = feature.GetField(name_id)
                 population = feature.GetField(population_id)

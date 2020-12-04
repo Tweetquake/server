@@ -51,7 +51,7 @@ if __name__ == '__main__':
         lines = f.readlines()
         for line in lines:
             city = cityStr2Dict(line)
-            if city['country code'] == 'IT':
+            if city['country'] == 'IT':
                 point = ogr.CreateGeometryFromWkt(
                     "POINT({} {})".format(city['longitude'], city['latitude']))
                 featureIndex = i
