@@ -142,7 +142,7 @@ class EarthquakeFaultsFinder:
     def find_candidate_faults(self, polygons):
         candidates_count, candidates = self.__find_all_candidate_faults(polygons)
         for i in range(0, len(candidates_count)):
-            fault = EarthquakeFault(candidates[i], candidates_count[i])
+            fault = EarthquakeFault(candidates[i], candidates_count[i][1])
             self.add_faults(fault)
         if self.__maximum_number_of_faults == 0:
             faults = self.__possible_faults
@@ -197,7 +197,7 @@ class EarthquakeFaultsFinder:
         self.__possible_faults.append(fault)
 
 
-class EarthquakeFault:
+class EarthquakeFault(object):
     '''
     This class define a possible earthquake faults.
     Since it is not possible to know for sure which fault

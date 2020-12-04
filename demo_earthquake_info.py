@@ -1,5 +1,6 @@
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from osgeo import osr, ogr
+from server.geojson_creation import geojson_creation
 
 if __name__ == "__main__":
     from sklearn.datasets import make_blobs
@@ -20,15 +21,11 @@ if __name__ == "__main__":
     max_faults = 3  # maximum number of possible earthquake faults
     faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder(max_faults)
     faults = faults_finder.find_candidate_faults(clusters_as_polygons)
-
-    for fault in faults:
-        print(fault.get_geometry())
-
-    poly_faults = []
-    for fault in faults:
-        poly_faults.append(fault.get_geometry())
+    geojson_creation.object_list_to_geojson_file('faults', faults)
 
     riskfinder = risking_area_finder.RiskingAreaFinder()
-    area = riskfinder.find_risking_area(poly_faults)
+    area = riskfinder.find_risking_area(faults)
+    geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
+    geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
 
     print(area)
