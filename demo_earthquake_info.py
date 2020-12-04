@@ -1,6 +1,6 @@
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from osgeo import osr, ogr
-from server.geojson_creation import geojson_creation
+from server.geoJSON_creation import geojson_creation
 
 if __name__ == "__main__":
     from sklearn.datasets import make_blobs
