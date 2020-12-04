@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from osgeo import osr, ogr
 
 
@@ -28,7 +30,8 @@ class RiskingAreaFinder:
 
         srs_italy = layer_italy.GetSpatialRef()
         target_osr = osr.SpatialReference()
-        target_osr.ImportFromEPSG(32632)  # SRS of UTM 32N
+        target_osr.ImportFromEPSG(4326)  # SRS of UTM 32N
+        transform = osr.CoordinateTransformation(srs_italy, target_osr)
 
 
         earthquake_population = 0
@@ -45,7 +48,7 @@ class RiskingAreaFinder:
                 country = feature.GetField(country_code_id)
                 province = feature.GetField(province_id)
                 earthquake_municipalities.append(Municipality(name, province, country,
-                                                              population, geom))
+                                                              population, deepcopy(geom)))
                 earthquake_population += int(population)
 
         return earthquake_municipalities, earthquake_population
@@ -70,7 +73,7 @@ class RiskingArea(object):
         return self.__geometry.Centroid()
 
 
-class Municipality(object):
+class Municipality:
     def __init__(self, name, province, state, population, geometry):
         self.__name = name
         self.__province = province
@@ -87,14 +90,14 @@ class Municipality(object):
     def get_state(self):
         return self.__state
 
-    def get_populatuion(self):
+    def get_population(self):
         return self.__population
 
     def get_geometry(self):
         return self.__geometry
 
-    def get_centroid(self):
-        return self.__geometry.Centroid()
+    def __str__(self):
+        return self.__name
 
 
 if __name__ == '__main__':
@@ -121,3 +124,6 @@ if __name__ == '__main__':
     area = riskfinder.find_risking_area(faults)
 
     print(area.get_population())
+    for municipality in area.get_municipalities():
+        print(municipality.get_geometry())
+
