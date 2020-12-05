@@ -26,5 +26,4 @@ if __name__ == "__main__":
     riskfinder = risking_area_finder.RiskingAreaFinder()
     area = riskfinder.find_risking_area(faults)
     geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
-    x = area.get_municipalities()[0].get_geometry().GetGeometryType()
     geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
