@@ -41,7 +41,7 @@ class TweetUsefulInfos(object):
         self.__text = get_tweet_text(tweet_status)
         self.__author = tweet_status.author.name
         self.__geometry = get_tweet_geom(tweet_status)
-        self.__place = tweet_status.place
+        self.__place = tweet_status.place.full_name
         self.__time_posted = tweet_status.created_at
 
     def get_text(self):
@@ -56,8 +56,13 @@ class TweetUsefulInfos(object):
     def get_place(self):
         return self.__place
 
-    def time_posted(self):
+    def get_time_posted(self):
         return self.__time_posted
+
+    def __str__(self):
+        return 'Tweet text: {}\n posted at {}\n by {}\n the {}\n'.format(self.get_text(), self.get_place(),
+                                                                                 self.get_author(),
+                                                                                 self.get_time_posted())
 
 
 class TweetFilter(object):
@@ -68,11 +73,12 @@ class TweetFilter(object):
         tweet_texts = []
         for tweet in tweets:
             tweet_texts.append(get_tweet_text(tweet))
-        labels = self.sentiment_analysis.predict(tweet_texts)
+        labels = self.sentiment_analysis.predict(pd.DataFrame(tweet_texts, columns=['Content']))
         filtered_tweets = []
         for i in range(len(labels)):
-            if labels[i] is label:
-                filtered_tweets.append(tweets[i])
+            if labels[i] == label:
+                tweet_info = TweetUsefulInfos(tweets[i])
+                filtered_tweets.append(tweet_info)
         return filtered_tweets
 
     def get_all_positives(self, tweets: []):
@@ -96,8 +102,8 @@ class TweetEarthquakeSA(object):
         if so it loads their states
         otherwise it initializes two new one
         """
-        self.classifier_path = 'tweet_earthquake_sentiment_analysis_data/SVM_state/classifier.pkl'
-        self.vectorizer_path = 'tweet_earthquake_sentiment_analysis_data/SVM_state/vectorizer.pkl'
+        self.classifier_path = 'server/tweet_handling/tweet_earthquake_sentiment_analysis_data/SVM_state/classifier.pkl'
+        self.vectorizer_path = 'server/tweet_handling/tweet_earthquake_sentiment_analysis_data/SVM_state/vectorizer.pkl'
         if get_existing and \
                 os.path.isfile(self.classifier_path) and \
                 os.path.isfile(self.vectorizer_path):
@@ -114,7 +120,7 @@ class TweetEarthquakeSA(object):
                                               sublinear_tf=True,
                                               use_idf=True)
 
-    def train(self, train_data, save_to_file=False):
+    def train(self, train_data: pd.DataFrame, save_to_file=False):
         '''
         @param train_data: pandas csv with labels 'Content' (tweet), 'Label'
         @param save_to_file: bool
@@ -128,14 +134,13 @@ class TweetEarthquakeSA(object):
             with open(self.vectorizer_path, 'wb') as fid:
                 dump(self.vectorizer, fid)
 
-    def predict(self, data: []):
+    def predict(self, data: pd.DataFrame):
         '''
 
-        @param data: pandas csv with labels 'Content' (tweet), 'Label'
+        @param data: pandas csv with labels 'Content' (tweet text), 'Label'
         @return: array of labels
         '''
-        data = pd.DataFrame(data, columns=['Content'])
-        test_vectors = self.vectorizer.transform(data)
+        test_vectors = self.vectorizer.transform(data['Content'])
         labels = self.classifier.predict(test_vectors)
         return labels
 
@@ -145,19 +150,20 @@ if __name__ == "__main__":
     execute this to train a new classifier
     '''
     data = pd.read_csv(
-        "tweet_earthquake_sentiment_analysis_data/earthquake_sentiment_analysis_dataset/earthquake_dataset_SA.csv")
+        "server/tweet_handling/tweet_earthquake_sentiment_analysis_data/earthquake_sentiment_analysis_dataset"
+        "/earthquake_dataset_SA.csv")
 
-    train_data, test_data = train_test_split(data, test_size=0.9)
+    train_data, test_data = train_test_split(data, test_size=0.05)
 
-    detector = TweetEarthquakeSA()
+    detector = TweetEarthquakeSA(get_existing=False)
     detector.train(train_data=train_data, save_to_file=True)
-    predictions = detector.predict(test_data['Content'])
+    predictions = detector.predict(test_data)
     report = classification_report(test_data['Label'], predictions, output_dict=True)
     print('positive: ', report['pos'])
     print('negative: ', report['neg'])
     texts = ['ha fatto il terremoto', 'terremoto in politica',
              'Scossa: è crollato un ponte davanti casa mia #terremoto']
     df = pd.DataFrame(texts, columns=['Content'])
-    prediction = detector.predict(df['Content'])
+    prediction = detector.predict(df)
     print()
     print(prediction)
