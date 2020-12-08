@@ -1,5 +1,6 @@
 from queue import Queue
 import tweepy
+from tweepy import Status
 
 
 class Stream2Queue(tweepy.StreamListener):

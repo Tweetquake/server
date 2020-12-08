@@ -7,6 +7,7 @@ import os.path
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from tweepy import Status
+from typing import List
 
 
 def get_tweet_text(tweet: Status):
@@ -35,13 +36,22 @@ def get_tweet_geom(tweet: Status):
         geom = None
     return geom
 
+def get_tweet_place(tweet: Status):
+    place = tweet.place
+    if place is None:
+        place = None
+    else:
+        place = tweet.place.full_name
+    return place
+
+
 
 class TweetUsefulInfos(object):
     def __init__(self, tweet_status: Status):
         self.__text = get_tweet_text(tweet_status)
         self.__author = tweet_status.author.name
         self.__geometry = get_tweet_geom(tweet_status)
-        self.__place = tweet_status.place.full_name
+        self.__place = get_tweet_place(tweet_status)
         self.__time_posted = tweet_status.created_at
 
     def get_text(self):
@@ -69,7 +79,7 @@ class TweetFilter(object):
     def __init__(self):
         self.sentiment_analysis = TweetEarthquakeSA()
 
-    def __get_by_label(self, tweets: [], label: str):
+    def __get_by_label(self, tweets: List[Status], label: str):
         tweet_texts = []
         for tweet in tweets:
             tweet_texts.append(get_tweet_text(tweet))
@@ -77,15 +87,14 @@ class TweetFilter(object):
         filtered_tweets = []
         for i in range(len(labels)):
             if labels[i] == label:
-                tweet_info = TweetUsefulInfos(tweets[i])
-                filtered_tweets.append(tweet_info)
+                filtered_tweets.append(tweets[i])
         return filtered_tweets
 
-    def get_all_positives(self, tweets: []):
+    def get_all_positives(self, tweets: List[Status]):
         positive_tweets = self.__get_by_label(tweets=tweets, label='pos')
         return positive_tweets
 
-    def get_all_negatives(self, tweets: []):
+    def get_all_negatives(self, tweets: List[Status]):
         negative_tweets = self.__get_by_label(tweets=tweets, label='neg')
         return negative_tweets
 
