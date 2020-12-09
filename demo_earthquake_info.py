@@ -11,16 +11,21 @@ if __name__ == "__main__":
                [12.51133, 41.89193], [13.69901, 42.66123], [14.20283, 42.4584]]
     X, labels_true = make_blobs(n_samples=20, centers=centers, cluster_std=0.5,
                                 random_state=0)
+    gdal_points = []
+    for point in X:
+        p = ogr.Geometry(ogr.wkbPoint)
+        p.AddPoint(point[0],point[1])
+        gdal_points.append(p)
 
     # actual test
     # We calculate clusters from points and export them as Polygons
-    clusterizer = earthquake_faults_finder.PointClusterizer()
-    clusters_as_polygons = clusterizer.get_concentrated_areas(X)
+    #clusterizer = earthquake_faults_finder.PointClusterizer()
+    #clusters_as_polygons = clusterizer.get_concentrated_areas(X)
 
     # We find the earthquake affected area
     max_faults = 3  # maximum number of possible earthquake faults
     faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder(max_faults)
-    faults = faults_finder.find_candidate_faults(clusters_as_polygons)
+    faults = faults_finder.find_candidate_faults(gdal_points)
     geojson_creation.object_list_to_geojson_file('faults', faults)
 
     riskfinder = risking_area_finder.RiskingAreaFinder()

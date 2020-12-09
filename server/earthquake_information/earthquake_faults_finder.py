@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 from scipy.spatial.qhull import ConvexHull
 from sklearn.cluster import DBSCAN
@@ -5,7 +7,15 @@ from sklearn.preprocessing import StandardScaler
 from osgeo import ogr
 
 
-class PointClusterizer(object):
+class PointsToPolygon:
+    def __init__(self):
+        pass
+
+    def get_concentrated_areas(self, point_list):
+        pass
+
+
+class PointClusterizer(PointsToPolygon):
     """
     This class calculates clusters from a list of geographic
     points splitting them into lists. For each cluster, non meaningful
@@ -95,6 +105,15 @@ class PointClusterizer(object):
             gdhulls.append(poly)
         return gdhulls
 
+    def __gdal_2_np(self, points_list):
+        list = []
+        for point in points_list:
+            x = point.GetX()
+            y = point.GetY()
+            list.append([x,y])
+        np_list = np.array(list)
+        return np_list
+
     def get_eps(self):
         return self.__eps
 
@@ -107,7 +126,8 @@ class PointClusterizer(object):
     def set_min_samples(self, min_samples: int):
         self.__min_samples = min_samples
 
-    def get_concentrated_areas(self, point_list: np.array):
+    def get_concentrated_areas(self, point_list):
+        point_list = self.__gdal_2_np(point_list)
         self.__calculate_clusters(point_list)
         self.__clusters2hulls()
         return self.__get_cluster_hulls_as_gdal_poly()
@@ -120,10 +140,12 @@ class EarthquakeFaultsFinder:
        It is possible to set a maximum number of possible faults.
        """
 
-    def __init__(self, max_faults=0, polygons_buffer=0.7):
+    def __init__(self, max_faults=3, polygons_buffer=0.7, points2polygon: PointsToPolygon = PointClusterizer()):
         self.__maximum_number_of_faults = max_faults
         self.__polygons_buffer = polygons_buffer
         self.__possible_faults = []
+        self.__points2polygon = points2polygon
+
 
     def get_maximum_number_of_faults(self):
         return self.__maximum_number_of_faults
@@ -139,7 +161,8 @@ class EarthquakeFaultsFinder:
         if polygons_buffer > 0:
             self.__polygons_buffer = polygons_buffer
 
-    def find_candidate_faults(self, polygons):
+    def find_candidate_faults(self, point_list):
+        polygons = self.__points2polygon.get_concentrated_areas(point_list)
         candidates_count, candidates = self.__find_all_candidate_faults(polygons)
         for i in range(0, len(candidates_count)):
             fault = EarthquakeFault(candidates[i], candidates_count[i][1])
@@ -237,7 +260,7 @@ if __name__ == '__main__':
     max_faults = 3  # maximum number of possible earthquake faults
 
     faultsfinder = EarthquakeFaultsFinder(max_faults)
-    faults = faultsfinder.find_candidate_faults(polygons)
+    faults = faultsfinder.find_candidate_faults(points)
 
     for fault in faults:
         print(fault.get_geometry())

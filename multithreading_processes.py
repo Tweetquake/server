@@ -6,6 +6,8 @@ from typing import List
 
 from tweepy import Status
 
+from server.earthquake_information import earthquake_faults_finder, risking_area_finder
+from server.geoJSON_creation import geojson_creation
 from server.tweet_handling.tweet_filtering import TweetFilter, get_tweet_text, TweetUsefulInfos
 from server.tweet_handling.tweet_retriever import put_tweets_in_queue_rt
 from queue import Queue
@@ -90,7 +92,19 @@ def analyze_filtered_tweets(filtered_tweets: Queue):
                 detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
         print("not detected")
 
+def create_geojsons(tweet_list):
+    geojson_creation.object_list_to_geojson_file('tweets', tweet_list)
+    faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
+    gdal_points = []
+    for tweet in tweet_list:
+        gdal_points.append(tweet.get_geometry())
+    faults = faults_finder.find_candidate_faults(gdal_points)
+    geojson_creation.object_list_to_geojson_file('faults', faults)
 
+    riskfinder = risking_area_finder.RiskingAreaFinder()
+    area = riskfinder.find_risking_area(faults)
+    geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
+    geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
 
 if __name__ == "__main__":
     tweets = Queue()

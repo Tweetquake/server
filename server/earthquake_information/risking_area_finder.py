@@ -4,8 +4,8 @@ from osgeo import osr, ogr
 
 
 class RiskingAreaFinder:
-    def __init__(self, faultsBuffer=0.3):
-        self.faultsBuffer = faultsBuffer
+    def __init__(self, faults_buffer=0.3):
+        self.faultsBuffer = faults_buffer
 
     # todo use class EarthquakeFaults
     def find_risking_area(self, faults: []):
@@ -33,11 +33,10 @@ class RiskingAreaFinder:
         target_osr.ImportFromEPSG(4326)  # SRS of UTM 32N
         transform = osr.CoordinateTransformation(srs_italy, target_osr)
 
-
         earthquake_population = 0
         for feature in layer_italy:
             geom = feature.GetGeometryRef()
-            #geom.Transform(transform)
+            # geom.Transform(transform)
             if geom.Within(area):
                 name_id = feature.GetFieldIndex("name")
                 population_id = feature.GetFieldIndex("population")
@@ -120,10 +119,9 @@ if __name__ == '__main__':
     fault3 = EarthquakeFault(polygon3, 0.3)
 
     faults = [fault1, fault2, fault3]
-    riskfinder = RiskingAreaFinder()
-    area = riskfinder.find_risking_area(faults)
+    risk_finder = RiskingAreaFinder()
+    area = risk_finder.find_risking_area(faults)
 
     print(area.get_population())
     for municipality in area.get_municipalities():
         print(municipality.get_geometry())
-

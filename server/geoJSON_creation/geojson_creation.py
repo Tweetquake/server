@@ -31,8 +31,8 @@ def object_list_to_geojson_file(filename, object_list):
                     attr_value = ''
                     if type(result) == list:
                         attr_value = attr_value+'['
-                        listToString = ', '.join([str(elem) for elem in result])
-                        attr_value = attr_value+listToString+']'
+                        list_to_string = ', '.join([str(elem) for elem in result])
+                        attr_value = attr_value+list_to_string+']'
                     else:
                         attr_value =str(result)
                     outFeature.SetField(attribute[4:len(attribute)], attr_value)
@@ -41,18 +41,3 @@ def object_list_to_geojson_file(filename, object_list):
         outDataSource = None
     else:
         print ('geojson file <'+filename+'> not created: there are no element in the list')
-
-'''
-def object_list_to_geojson(filename, object_list):
-    features = []
-    for object in object_list:
-        geom = object.get_geometry()
-        if (geom.GetGeometryType == 'POLYGON'):
-        Feature(Polygon())
-        print(wtk_geom)
-        feature = Feature(POLYGON ((13.185225 42.519176,13.397271 42.378363,13.326091 42.319939,13.113885 42.460752,13.185225 42.519176)))
-        feature = Feature(geometry = wtk_geom)
-        features.append(feature)
-    feature_collection = FeatureCollection(features)
-    print(feature_collection)
-'''
