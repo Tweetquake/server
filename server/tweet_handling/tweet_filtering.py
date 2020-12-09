@@ -28,17 +28,22 @@ def get_tweet_text(tweet: Status):
 def get_tweet_geom(tweet: Status):
     if tweet.coordinates is not None:
         geom = tweet.coordinates
+        x = geom[0]
+        y = geom[1]
+        geom = ogr.Geometry(ogr.wkbPoint)
+        geom.AddPoint(x, y)
     elif tweet.place is not None:
         # we have to take the coords in the bounding_box
         box = tweet.place.bounding_box.coordinates
         # we take the first one in bbox, it could be improved in the future
         geom = box[0][0]
+        x = geom[0]
+        y = geom[1]
+        geom = ogr.Geometry(ogr.wkbPoint)
+        geom.AddPoint(x, y)
     else:
         geom = None
-    x = geom[0]
-    y = geom[1]
-    geom = ogr.Geometry(ogr.wkbPoint)
-    geom.AddPoint(x, y)
+
     return geom
 
 def get_tweet_place(tweet: Status):

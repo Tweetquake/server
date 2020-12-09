@@ -58,8 +58,7 @@ def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
             tweet_array.append(tweet)
         positives = tweet_filter.get_all_positives(tweet_array)
         for positive in positives:
-            useful_infos_tweet = TweetUsefulInfos(positive)
-            filtered_tweets.put(useful_infos_tweet)
+            filtered_tweets.put(positive)
 
 # TODO finish this function
 def analyze_filtered_tweets(filtered_tweets: Queue):
@@ -88,6 +87,8 @@ def analyze_filtered_tweets(filtered_tweets: Queue):
                 filtered_tweet = filtered_tweets.get()
                 tweets_2_analyze.append(filtered_tweet)
                 tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+            if tweets_2_analyze:
+                create_geojsons(tweets_2_analyze)
             if tweets_2_analyze_datetimes:
                 detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
         print("not detected")
