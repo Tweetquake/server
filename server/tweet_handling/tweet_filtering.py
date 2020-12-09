@@ -1,5 +1,6 @@
 from _pickle import load, dump
 import pandas as pd
+from osgeo import ogr
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
 import os.path
@@ -34,6 +35,10 @@ def get_tweet_geom(tweet: Status):
         geom = box[0][0]
     else:
         geom = None
+    x = geom[0]
+    y = geom[1]
+    geom = ogr.Geometry(ogr.wkbPoint)
+    geom.AddPoint(x, y)
     return geom
 
 def get_tweet_place(tweet: Status):
@@ -73,33 +78,13 @@ class TweetUsefulInfos(object):
         return 'Tweet text: {}\n posted at {}\n by {}\n the {}\n'.format(self.get_text(), self.get_place(),
                                                                                  self.get_author(),
                                                                                  self.get_time_posted())
-
-
-class TweetFilter(object):
+class FilteringMethod:
     def __init__(self):
-        self.sentiment_analysis = TweetEarthquakeSA()
+        pass
+    def predict(self, data: pd.DataFrame):
+        pass
 
-    def __get_by_label(self, tweets: List[Status], label: str):
-        tweet_texts = []
-        for tweet in tweets:
-            tweet_texts.append(get_tweet_text(tweet))
-        labels = self.sentiment_analysis.predict(pd.DataFrame(tweet_texts, columns=['Content']))
-        filtered_tweets = []
-        for i in range(len(labels)):
-            if labels[i] == label:
-                filtered_tweets.append(tweets[i])
-        return filtered_tweets
-
-    def get_all_positives(self, tweets: List[Status]):
-        positive_tweets = self.__get_by_label(tweets=tweets, label='pos')
-        return positive_tweets
-
-    def get_all_negatives(self, tweets: List[Status]):
-        negative_tweets = self.__get_by_label(tweets=tweets, label='neg')
-        return negative_tweets
-
-
-class TweetEarthquakeSA(object):
+class TweetEarthquakeSA(FilteringMethod):
     """
     used to check if a tweet talks about an earthquake happening now or not
     using sentiment analysis
@@ -152,6 +137,31 @@ class TweetEarthquakeSA(object):
         test_vectors = self.vectorizer.transform(data['Content'])
         labels = self.classifier.predict(test_vectors)
         return labels
+
+
+class TweetFilter(object):
+    def __init__(self, filtering_method: FilteringMethod = TweetEarthquakeSA()):
+        self.filtering_method = filtering_method
+
+    def __get_by_label(self, tweets: List[TweetUsefulInfos], label: str):
+        tweet_texts = []
+        for tweet in tweets:
+            tweet_texts.append(tweet.get_text())
+        labels = self.filtering_method.predict(pd.DataFrame(tweet_texts, columns=['Content']))
+        filtered_tweets = []
+        for i in range(len(labels)):
+            if labels[i] == label:
+                filtered_tweets.append(tweets[i])
+        return filtered_tweets
+
+    def get_all_positives(self, tweets: List[TweetUsefulInfos]):
+        positive_tweets = self.__get_by_label(tweets=tweets, label='pos')
+        return positive_tweets
+
+    def get_all_negatives(self, tweets: List[TweetUsefulInfos]):
+        negative_tweets = self.__get_by_label(tweets=tweets, label='neg')
+        return negative_tweets
+
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@ from queue import Queue
 import tweepy
 from tweepy import Status
 
+from server.tweet_handling.tweet_filtering import TweetUsefulInfos
+
 
 class Stream2Queue(tweepy.StreamListener):
     '''
@@ -25,7 +27,7 @@ class Stream2Queue(tweepy.StreamListener):
         @param status: tweepy status
         @return:
         '''
-        self.tweets.put(status)
+        self.tweets.put(TweetUsefulInfos(status))
 
 
 def __keys(name):
