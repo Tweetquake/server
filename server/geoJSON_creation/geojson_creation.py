@@ -20,26 +20,27 @@ def object_list_to_geojson_file(filename, object_list):
                 outLayer.CreateField(ogr.FieldDefn(attribute[4:len(attribute)], ogr.OFTString))
 
         for object in object_list:
-            # create a new feature
-            outFeature = ogr.Feature(featureDefn)
+            if object.get_geometry:
+                # create a new feature
+                outFeature = ogr.Feature(featureDefn)
 
-            # set geometry
-            outFeature.SetGeometry(object.get_geometry())
+                # set geometry
+                outFeature.SetGeometry(object.get_geometry())
 
-            # set fields
-            for attribute in dir(object):
-                if attribute[0:3] == 'get' and attribute[4:len(
-                        attribute)] != 'geometry':  # take all the attributes (different from the geometry) by using the methods starting with "get"
-                    result = getattr(object, attribute)()
-                    attr_value = ''
-                    if type(result) == list:
-                        attr_value = attr_value + '['
-                        list_to_string = ', '.join([str(elem) for elem in result])
-                        attr_value = attr_value + list_to_string + ']'
-                    else:
-                        attr_value = str(result)
-                    outFeature.SetField(attribute[4:len(attribute)], attr_value)
-            outLayer.CreateFeature(outFeature)
+                # set fields
+                for attribute in dir(object):
+                    if attribute[0:3] == 'get' and attribute[4:len(
+                            attribute)] != 'geometry':  # take all the attributes (different from the geometry) by using the methods starting with "get"
+                        result = getattr(object, attribute)()
+                        attr_value = ''
+                        if type(result) == list:
+                            attr_value = attr_value + '['
+                            list_to_string = ', '.join([str(elem) for elem in result])
+                            attr_value = attr_value + list_to_string + ']'
+                        else:
+                            attr_value = str(result)
+                        outFeature.SetField(attribute[4:len(attribute)], attr_value)
+                outLayer.CreateFeature(outFeature)
         outFeature = None
         outDataSource = None
     else:
