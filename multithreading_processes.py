@@ -95,6 +95,7 @@ def analyze_filtered_tweets(filtered_tweets: Queue):
         __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes)
         if tweets_2_analyze_datetimes:
             detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
+            tweets_2_analyze_datetimes = []
         if tweets_2_analyze:
             geojson_creation.object_list_to_geojson_file('tweets', tweets_2_analyze)
         while detection.is_detected():
@@ -106,6 +107,7 @@ def analyze_filtered_tweets(filtered_tweets: Queue):
                 __create_geojsons(tweets_2_analyze)
             if tweets_2_analyze_datetimes:
                 detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
+                tweets_2_analyze_datetimes = []
         print("not detected")
         if detected_previously:
             tweets_2_analyze = []
