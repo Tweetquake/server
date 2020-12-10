@@ -1,5 +1,6 @@
 from osgeo import ogr, osr
 
+
 def cityStr2Dict(cityStr):
     city = (cityStr.rstrip()).split('\t')
     return {
@@ -25,7 +26,6 @@ def cityStr2Dict(cityStr):
     }
 
 
-
 if __name__ == '__main__':
 
     path = 'cities500_IT.shp'
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     new_field = ogr.FieldDefn('province', ogr.OFTString)  # we will create a new field called Hometown as String
     layer.CreateField(new_field)  # self explaining
 
-    i=0
+    i = 0
     with open('cities500.txt', 'r', encoding='utf') as f:
         lines = f.readlines()
         for line in lines:
@@ -72,6 +72,5 @@ if __name__ == '__main__':
                 feature.SetField(province, city['admin2 code'])
                 layer.SetFeature(feature)
                 print(city['name'])
-                i=i+1
+                i = i + 1
     shapeData.Destroy()
-

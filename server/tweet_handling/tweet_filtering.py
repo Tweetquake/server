@@ -1,14 +1,14 @@
+import os.path
 from _pickle import load, dump
+from typing import List
+
 import pandas as pd
 from osgeo import ogr
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
-import os.path
-
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from tweepy import Status
-from typing import List
 
 
 def get_tweet_text(tweet: Status):
@@ -46,6 +46,7 @@ def get_tweet_geom(tweet: Status):
 
     return geom
 
+
 def get_tweet_place(tweet: Status):
     place = tweet.place
     if place is None:
@@ -53,7 +54,6 @@ def get_tweet_place(tweet: Status):
     else:
         place = tweet.place.full_name
     return place
-
 
 
 class TweetUsefulInfos(object):
@@ -81,13 +81,17 @@ class TweetUsefulInfos(object):
 
     def __str__(self):
         return 'Tweet text: {}\n posted at {}\n by {}\n the {}\n'.format(self.get_text(), self.get_place(),
-                                                                                 self.get_author(),
-                                                                                 self.get_time_posted())
+                                                                         self.get_author(),
+                                                                         self.get_time_posted())
+
+
 class FilteringMethod:
     def __init__(self):
         pass
+
     def predict(self, data: pd.DataFrame):
         pass
+
 
 class TweetEarthquakeSA(FilteringMethod):
     """
@@ -166,7 +170,6 @@ class TweetFilter(object):
     def get_all_negatives(self, tweets: List[TweetUsefulInfos]):
         negative_tweets = self.__get_by_label(tweets=tweets, label='neg')
         return negative_tweets
-
 
 
 if __name__ == "__main__":

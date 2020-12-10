@@ -1,14 +1,12 @@
 import threading
 from datetime import datetime, timedelta
-from time import sleep
 
 from typing import List
 
-from tweepy import Status
 
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from server.geoJSON_creation import geojson_creation
-from server.tweet_handling.tweet_filtering import TweetFilter, get_tweet_text, TweetUsefulInfos
+from server.tweet_handling.tweet_filtering import TweetFilter
 from server.tweet_handling.tweet_retriever import put_tweets_in_queue_rt
 from queue import Queue
 
@@ -38,6 +36,32 @@ class EarthquakeDetection:
     def get_time_window_end(self):
         return datetime.now()-self.time_window
 
+def __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes):
+    filtered_tweet = filtered_tweets.get()
+    tweets_2_analyze.append(filtered_tweet)
+    tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+    while not filtered_tweets.empty():
+        filtered_tweet = filtered_tweets.get()
+        tweets_2_analyze.append(filtered_tweet)
+        tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+
+
+def __create_geojsons(tweet_list):
+    geojson_creation.object_list_to_geojson_file('tweets', tweet_list)
+    faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
+    gdal_points = []
+    for tweet in tweet_list:
+        geom = tweet.get_geometry()
+        if geom is not None:
+            gdal_points.append(geom)
+    faults = faults_finder.find_candidate_faults(gdal_points)
+    geojson_creation.object_list_to_geojson_file('faults', faults)
+
+    riskfinder = risking_area_finder.RiskingAreaFinder()
+    area = riskfinder.find_risking_area(faults)
+    geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
+    geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
+
 
 
 def put_tweets_in_queue(tweets: Queue):
@@ -60,45 +84,53 @@ def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
         for positive in positives:
             filtered_tweets.put(positive)
 
-# TODO finish this function
 def analyze_filtered_tweets(filtered_tweets: Queue):
     # we detect an earthquake if 5 tweets are posted in the last 5 minutes
     detection = EarthquakeDetection(number_of_earthquakes=5, time_window=timedelta(seconds=5*60))
     tweets_2_analyze = []
     tweets_2_analyze_datetimes = []
+    detected_previously = False
     while True:
         # this is made in order to block this thread
-        filtered_tweet = filtered_tweets.get()
-        tweets_2_analyze.append(filtered_tweet)
-        tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
-        while not filtered_tweets.empty():
-            filtered_tweet = filtered_tweets.get()
-            tweets_2_analyze.append(filtered_tweet)
-            tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+        __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes)
         if tweets_2_analyze_datetimes:
             detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
+        if tweets_2_analyze:
+            geojson_creation.object_list_to_geojson_file('tweets', tweets_2_analyze)
         while detection.is_detected():
             print("detected")
+            detected_previously = True
             # this is made in order to block this thread
-            filtered_tweet = filtered_tweets.get()
-            tweets_2_analyze.append(filtered_tweet)
-            tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
-            while not filtered_tweets.empty():
-                filtered_tweet = filtered_tweets.get()
-                tweets_2_analyze.append(filtered_tweet)
-                tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+            __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes)
             if tweets_2_analyze:
-                create_geojsons(tweets_2_analyze)
+                __create_geojsons(tweets_2_analyze)
             if tweets_2_analyze_datetimes:
                 detection.put_tweets_datetimes(tweets_datetimes=tweets_2_analyze_datetimes)
         print("not detected")
+        if detected_previously:
+            tweets_2_analyze = []
+            tweets_2_analyze_datetimes = []
+            detected_previously = False
 
-def create_geojsons(tweet_list):
+
+def __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes):
+    filtered_tweet = filtered_tweets.get()
+    tweets_2_analyze.append(filtered_tweet)
+    tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+    while not filtered_tweets.empty():
+        filtered_tweet = filtered_tweets.get()
+        tweets_2_analyze.append(filtered_tweet)
+        tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+
+
+def __create_geojsons(tweet_list):
     geojson_creation.object_list_to_geojson_file('tweets', tweet_list)
     faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
     gdal_points = []
     for tweet in tweet_list:
-        gdal_points.append(tweet.get_geometry())
+        geom = tweet.get_geometry()
+        if geom is not None:
+            gdal_points.append(geom)
     faults = faults_finder.find_candidate_faults(gdal_points)
     geojson_creation.object_list_to_geojson_file('faults', faults)
 

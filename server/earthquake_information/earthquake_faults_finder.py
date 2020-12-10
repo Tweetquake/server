@@ -1,10 +1,8 @@
-from typing import List
-
 import numpy as np
+from osgeo import ogr
 from scipy.spatial.qhull import ConvexHull
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
-from osgeo import ogr
 
 
 class PointsToPolygon:
@@ -110,7 +108,7 @@ class PointClusterizer(PointsToPolygon):
         for point in points_list:
             x = point.GetX()
             y = point.GetY()
-            list.append([x,y])
+            list.append([x, y])
         np_list = np.array(list)
         return np_list
 
@@ -145,7 +143,6 @@ class EarthquakeFaultsFinder:
         self.__polygons_buffer = polygons_buffer
         self.__possible_faults = []
         self.__points2polygon = points2polygon
-
 
     def get_maximum_number_of_faults(self):
         return self.__maximum_number_of_faults

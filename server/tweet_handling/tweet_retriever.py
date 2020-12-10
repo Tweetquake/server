@@ -1,6 +1,6 @@
 from queue import Queue
+
 import tweepy
-from tweepy import Status
 
 from server.tweet_handling.tweet_filtering import TweetUsefulInfos
 
@@ -49,7 +49,6 @@ def __get_API():
 
 
 def put_tweets_in_queue_rt(queue: Queue, words_to_track=None, languages=None, user=None):
-
     if languages is None:
         languages = ['it']
     if words_to_track is None:
