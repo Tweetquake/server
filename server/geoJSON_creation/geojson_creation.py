@@ -20,7 +20,7 @@ def object_list_to_geojson_file(filename, object_list):
                 outLayer.CreateField(ogr.FieldDefn(attribute[4:len(attribute)], ogr.OFTString))
 
         for object in object_list:
-            if object.get_geometry:
+            if object.get_geometry():
                 # create a new feature
                 outFeature = ogr.Feature(featureDefn)
 

@@ -254,9 +254,7 @@ if __name__ == '__main__':
     polygon4 = ogr.CreateGeometryFromWkt(p4)
     polygons = [polygon1, polygon2, polygon3, polygon4]
 
-    max_faults = 3  # maximum number of possible earthquake faults
-
-    faultsfinder = EarthquakeFaultsFinder(max_faults)
+    faultsfinder = EarthquakeFaultsFinder()
     faults = faultsfinder.find_candidate_faults(points)
 
     for fault in faults:
