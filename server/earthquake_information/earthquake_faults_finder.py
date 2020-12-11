@@ -158,6 +158,9 @@ class EarthquakeFaultsFinder:
         if polygons_buffer > 0:
             self.__polygons_buffer = polygons_buffer
 
+    def add_faults(self, fault):
+        self.__possible_faults.append(fault)
+
     def find_candidate_faults(self, point_list):
         polygons = self.__points2polygon.get_concentrated_areas(point_list)
         candidates_count, candidates = self.__find_all_candidate_faults(polygons)
@@ -173,30 +176,42 @@ class EarthquakeFaultsFinder:
         return faults
 
     def __find_all_candidate_faults(self, polygons):
-        # load the composite seismologic sources from the shapefile 'CSSPLN321.shp''
+        # load the composite seismologic sources from the shapefile 'ISS321.shp''
         driver = ogr.GetDriverByName("ESRI Shapefile")
         file_seism = 'server/earthquake_information/INGV/ISS321.shp'
         vector_seism = driver.Open(file_seism, 0)
         layer_seism = vector_seism.GetLayer(0)
-
-        # Find nearest seismologic sources for each area (e.g. with dist of 20 km)
-        candidates_count = {}
-        candidates = []
+        # Find probability of seismogenic faults for each polygons (e.g. with dist of 20 km)
+        polygons_probabilities = {}
         for polygon in polygons:
-            sources = self.__find_nearest_faults(polygon, layer_seism)
-            for source in sources:
-                sourceID = source.GetField(0)
-                if sourceID in candidates_count:
-                    candidates_count[sourceID] = candidates_count[sourceID] + 1
-                else:
-                    candidates_count[sourceID] = 1
-                    source_geom = source.GetGeometryRef().GetGeometryRef(0)
-                    source_poly = ogr.Geometry(ogr.wkbPolygon)
-                    source_poly.AddGeometry(source_geom)
-                    candidates.append(source_poly)
+            distances = {} #dictionary fault -> distance from this polygon
+            faults_probabilities = {}
+            sum = 0
+            for fault in layer_seism:
+                fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
+                fault_poly = ogr.Geometry(ogr.wkbPolygon)
+                fault_poly.AddGeometry(fault_geom)
+                distance = 1/(polygon.Distance(fault_poly))
+                distances[fault.GetField(0)] = distance
+                sum = sum + distance
+            for fault in layer_seism:
+                faults_probabilities[fault.GetField(0)] = distances[fault.GetField(0)]/sum
+            polygons_probabilities[polygon] = faults_probabilities
+        probabilities_sum = {}
+        faults = []
+        for fault in layer_seism:
+            fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
+            fault_poly = ogr.Geometry(ogr.wkbPolygon)
+            fault_poly.AddGeometry(fault_geom)
+            prob_fault = 0
+            for polygon in polygons:
+                prob_fault = prob_fault + polygons_probabilities[polygon][fault.GetField(0)]
+            prob_fault = prob_fault/len(polygons)
+            probabilities_sum[fault.GetField(0)] = prob_fault
+            faults.append(fault_poly)
 
-        sorted_candidates_count = sorted(candidates_count.items(), key=lambda x: x[1], reverse=True)
-        return sorted_candidates_count, candidates
+        sorted_candidates_count = sorted(probabilities_sum.items(), key=lambda x: x[1], reverse=True)
+        return sorted_candidates_count, faults
 
     def __find_nearest_faults(self, polygon, layer_seism):
 
@@ -213,8 +228,14 @@ class EarthquakeFaultsFinder:
 
         return faults
 
-    def add_faults(self, fault):
-        self.__possible_faults.append(fault)
+    def __find_distances_from_faults(self, polygon, layer_seism):
+        faults_distances = {}
+        for fault in layer_seism:
+            fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
+            fault_poly = ogr.Geometry(ogr.wkbPolygon)
+            fault_poly.AddGeometry(fault_geom)
+            faults_distances[fault] = polygon.Distance(fault_poly)
+        return faults_distances
 
 
 class EarthquakeFault(object):
@@ -243,19 +264,24 @@ if __name__ == '__main__':
     '''
         example of finding earthquake faults from polygons
     '''
-    p1 = 'POLYGON((13.5068345450051 42.453405113893 0, 13.4096230499813 42.4523491454874 0, 13.2115443247965 42.4064643249082 0, 13.1851261157124 42.3844347578868 0, 13.1862671506709 42.337148180385 0, 13.2258412924453 42.2526387443975 0, 13.2423197602569 42.2312002178368 0, 13.3705863707811 42.1833929419606 0, 13.4698105487939 42.19658686572 0, 13.5302690593105 42.2821405484086 0, 13.5230236642177 42.3785610045857 0, 13.5068345450051 42.453405113893 0))'
-    p2 = 'POLYGON((14.2465962015719 42.3462559641075 0, 14.2859920854647 42.4805859828347 0, 14.256855338585 42.5160452907775 0, 14.1304330010751 42.5061116162797 0, 14.1123300163194 42.4770935608544 0, 14.1465913235078 42.4101315155575 0, 14.1780504262123 42.3621534094607 0, 14.2465962015719 42.3462559641075 0))'
-    p3 = 'POLYGON((12.422396050106 41.9597877695711 0, 12.4823766713468 41.8396081631992 0, 12.5776376377442 41.8810792934836 0, 12.6420591272299 41.9553531260793 0, 12.6459359418536 41.9955660354004 0, 12.4808692513795 42.0213784609936 0, 12.4510442020462 42.0256345467169 0, 12.429211361642 42.0279834829955 0, 12.422396050106 41.9597877695711 0))'
-    p4 = 'POLYGON((13.6289949256827 42.5530960232256 0, 13.7778745145475 42.5856347944146 0, 13.7654694564848 42.667358586897 0, 13.6942330876273 42.7811639905155 0, 13.6351124442189 42.7394211401667 0, 13.6132295136819 42.7203354083481 0, 13.5946219685106 42.6919874190885 0, 13.6068964812642 42.628919077663 0, 13.6289949256827 42.5530960232256 0))'
 
-    polygon1 = ogr.CreateGeometryFromWkt(p1)
-    polygon2 = ogr.CreateGeometryFromWkt(p2)
-    polygon3 = ogr.CreateGeometryFromWkt(p3)
-    polygon4 = ogr.CreateGeometryFromWkt(p4)
-    polygons = [polygon1, polygon2, polygon3, polygon4]
+    p1 = ogr.Geometry(ogr.wkbPoint)
+    p1.AddPoint(16.02055, 39.322077)
+    p2 = ogr.Geometry(ogr.wkbPoint)
+    p2.AddPoint(16.108425, 39.115321)
+    p3 = ogr.Geometry(ogr.wkbPoint)
+    p3.AddPoint(16.131526, 39.298742)
+    p4 = ogr.Geometry(ogr.wkbPoint)
+    p4.AddPoint(16.5434, 39.502651)
+    p5 = ogr.Geometry(ogr.wkbPoint)
+    p5.AddPoint(16.218534, 39.409581)
+    p6 = ogr.Geometry(ogr.wkbPoint)
+    p6.AddPoint(13.173664, 42.242641)
 
-    faultsfinder = EarthquakeFaultsFinder()
-    faults = faultsfinder.find_candidate_faults(points)
+    points = [p1, p2, p3, p4, p5, p6]
+
+    faults_finder = EarthquakeFaultsFinder()
+    faults = faults_finder.find_candidate_faults(points)
 
     for fault in faults:
-        print(fault.get_geometry())
+        print(fault.get_geometry(), fault.get_probability())
