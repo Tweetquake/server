@@ -42,8 +42,9 @@ def __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analy
     tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
     while not filtered_tweets.empty():
         filtered_tweet = filtered_tweets.get()
-        tweets_2_analyze.append(filtered_tweet)
-        tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
+        if filtered_tweet.get_time_posted():
+            tweets_2_analyze.append(filtered_tweet)
+            tweets_2_analyze_datetimes.append(filtered_tweet.get_time_posted())
 
 
 def __create_geojsons(tweet_list):
@@ -55,13 +56,14 @@ def __create_geojsons(tweet_list):
         geom = tweet.get_geometry()
         if geom is not None:
             gdal_points.append(geom)
-    faults = faults_finder.find_candidate_faults(gdal_points)
-    geojson_creation.object_list_to_geojson_file('faults', faults)
+    if gdal_points:
+        faults = faults_finder.find_candidate_faults(gdal_points)
+        geojson_creation.object_list_to_geojson_file('faults', faults)
 
-    riskfinder = risking_area_finder.RiskingAreaFinder()
-    area = riskfinder.find_risking_area(faults)
-    geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
-    geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
+        riskfinder = risking_area_finder.RiskingAreaFinder()
+        area = riskfinder.find_risking_area(faults)
+        geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
+        geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
 
 
 

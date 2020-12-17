@@ -2,6 +2,6 @@
 "type": "FeatureCollection",
 "name": "Tweets",
 "features": [
-
+{ "type": "Feature", "properties": { "author": "SOCIAL Patico", "place": "Milano, Lombardia", "text": "Avete sentito anche voi il terremoto? Io si. #Milano #terremotoMilano #Terremoto", "time_posted": "2020-12-17 17:27:28" }, "geometry": { "type": "Point", "coordinates": [ 9.040628, 45.386726, 0.0 ] } }
 ]
 }
