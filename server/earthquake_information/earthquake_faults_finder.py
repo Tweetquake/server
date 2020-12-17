@@ -21,7 +21,7 @@ class PointClusterizer(PointsToPolygon):
     It also calculates a convex hull for each cluster.
     """
 
-    def __init__(self, eps=0.5, min_samples=5):
+    def __init__(self, eps=0.5, min_samples=1):
 
         self.__eps = eps
         self.__min_samples = min_samples
