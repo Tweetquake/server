@@ -51,6 +51,7 @@ def __create_geojsons(tweet_list):
     faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
     gdal_points = []
     for tweet in tweet_list:
+        print(tweet)
         geom = tweet.get_geometry()
         if geom is not None:
             gdal_points.append(geom)

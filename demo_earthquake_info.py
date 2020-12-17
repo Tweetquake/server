@@ -1,31 +1,31 @@
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from osgeo import osr, ogr
 from server.geoJSON_creation import geojson_creation
+import os
 
 if __name__ == "__main__":
-    from sklearn.datasets import make_blobs
+    '''
+    example of finding earthquake faults from points
+    '''
 
-    # generate samples (representing emergency tweets) within cities.
-    # samples represent coordinates within Rome, Teramo, Pescara and  L'Aquila
-    centers = [[13.33799, 42.29093],
-               [12.51133, 41.89193], [13.69901, 42.66123], [14.20283, 42.4584]]
-    X, labels_true = make_blobs(n_samples=20, centers=centers, cluster_std=0.5,
-                                random_state=0)
-    gdal_points = []
-    for point in X:
-        p = ogr.Geometry(ogr.wkbPoint)
-        p.AddPoint(point[0],point[1])
-        gdal_points.append(p)
+    p1 = ogr.Geometry(ogr.wkbPoint)
+    p1.AddPoint(16.02055, 39.322077)
+    p2 = ogr.Geometry(ogr.wkbPoint)
+    p2.AddPoint(16.108425, 39.115321)
+    p3 = ogr.Geometry(ogr.wkbPoint)
+    p3.AddPoint(16.131526, 39.298742)
+    p4 = ogr.Geometry(ogr.wkbPoint)
+    p4.AddPoint(16.5434, 39.502651)
+    p5 = ogr.Geometry(ogr.wkbPoint)
+    p5.AddPoint(16.218534, 39.409581)
+    p6 = ogr.Geometry(ogr.wkbPoint)
+    p6.AddPoint(13.173664, 42.242641)
 
-    # actual test
-    # We calculate clusters from points and export them as Polygons
-    #clusterizer = earthquake_faults_finder.PointClusterizer()
-    #clusters_as_polygons = clusterizer.get_concentrated_areas(X)
+    points = [p1, p2, p3, p4, p5, p6]
 
-    # We find the earthquake affected area
-    max_faults = 3  # maximum number of possible earthquake faults
-    faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder(max_faults)
-    faults = faults_finder.find_candidate_faults(gdal_points)
+    faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
+    faults = faults_finder.find_candidate_faults(points)
+
     geojson_creation.object_list_to_geojson_file('faults', faults)
 
     riskfinder = risking_area_finder.RiskingAreaFinder()

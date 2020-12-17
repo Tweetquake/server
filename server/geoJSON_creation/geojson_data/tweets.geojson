@@ -2,10 +2,6 @@
 "type": "FeatureCollection",
 "name": "Tweets",
 "features": [
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Gioielleria L'Etoile", "text": "Ha fatto il terremoto", "time_posted": "2020-12-17 11:48:27" }, "geometry": { "type": "Point", "coordinates": [ 13.40821, 42.35783, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Fossa, Abruzzo", "text": "Ha fatto il terremoto", "time_posted": "2020-12-17 11:48:38" }, "geometry": { "type": "Point", "coordinates": [ 13.470998, 42.283631, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "L'Aquila, Abruzzo", "text": "Ha fatto il terremoto", "time_posted": "2020-12-17 11:48:53" }, "geometry": { "type": "Point", "coordinates": [ 13.173664, 42.242641, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Rieti, Lazio", "text": "Ha fatto il terremoto", "time_posted": "2020-12-17 11:49:11" }, "geometry": { "type": "Point", "coordinates": [ 12.711239, 42.307977, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Equitalia Centro SpA", "text": "Ha fatto il terremoto", "time_posted": "2020-12-17 11:49:27" }, "geometry": { "type": "Point", "coordinates": [ 13.407652, 42.352553, 0.0 ] } }
+
 ]
 }

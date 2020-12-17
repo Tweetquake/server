@@ -163,15 +163,16 @@ class EarthquakeFaultsFinder:
 
     def find_candidate_faults(self, point_list):
         polygons = self.__points2polygon.get_concentrated_areas(point_list)
-        candidates_count, candidates = self.__find_all_candidate_faults(polygons)
-        for i in range(0, len(candidates_count)):
-            fault = EarthquakeFault(candidates[i], candidates_count[i][1])
+        sorted_by_probabilities, faults_geom = self.__find_all_candidate_faults(polygons)
+        for i in range(0, len(sorted_by_probabilities)):
+            id_fault = sorted_by_probabilities[i][0]
+            fault = EarthquakeFault(faults_geom[id_fault], sorted_by_probabilities[i][1])
             self.add_faults(fault)
         if self.__maximum_number_of_faults == 0:
             faults = self.__possible_faults
         else:
             faults = []
-            for i in range(0, min(self.__maximum_number_of_faults, len(candidates_count))):
+            for i in range(0, min(self.__maximum_number_of_faults, len(sorted_by_probabilities))):
                 faults.append(self.__possible_faults[i])
         return faults
 
@@ -198,7 +199,7 @@ class EarthquakeFaultsFinder:
                 faults_probabilities[fault.GetField(0)] = distances[fault.GetField(0)]/sum
             polygons_probabilities[polygon] = faults_probabilities
         probabilities_sum = {}
-        faults = []
+        faults_poly = {}
         for fault in layer_seism:
             fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
             fault_poly = ogr.Geometry(ogr.wkbPolygon)
@@ -208,10 +209,10 @@ class EarthquakeFaultsFinder:
                 prob_fault = prob_fault + polygons_probabilities[polygon][fault.GetField(0)]
             prob_fault = prob_fault/len(polygons)
             probabilities_sum[fault.GetField(0)] = prob_fault
-            faults.append(fault_poly)
+            faults_poly[fault.GetField(0)] = fault_poly
 
-        sorted_candidates_count = sorted(probabilities_sum.items(), key=lambda x: x[1], reverse=True)
-        return sorted_candidates_count, faults
+        sorted_faults_probabilities = sorted(probabilities_sum.items(), key=lambda x: x[1], reverse=True)
+        return sorted_faults_probabilities, faults_poly
 
     def __find_nearest_faults(self, polygon, layer_seism):
 
@@ -262,7 +263,7 @@ class EarthquakeFault(object):
 
 if __name__ == '__main__':
     '''
-        example of finding earthquake faults from polygons
+        example of finding earthquake faults from points
     '''
 
     p1 = ogr.Geometry(ogr.wkbPoint)

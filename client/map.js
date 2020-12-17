@@ -49,7 +49,7 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
                     color: "white"
                 }
             }
-        }
+        };
         // Faults renderer
         const renderer_faults = {
             type: "simple",
@@ -61,7 +61,7 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
                     color: "white"
                 }
             }
-        }
+        };
         // Risking Area renderer
         const renderer_risking_area = {
             type: "simple",
@@ -74,7 +74,7 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
                     color: "white"
                 }
             }
-        }
+        };
         // Municipalities renderer
         const renderer_municipalities = {
             type: "simple",
@@ -95,16 +95,16 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
 
         // Create GeoJSON layers
         // Create GeoJSONLayer for tweets
-        var geojsonLayer_tweets = new GeoJSONLayer({
-            url: "tweets.geojson",
+        const geojsonLayer_tweets = new GeoJSONLayer({
+            url: "../server/geoJSON_creation/geojson_data/tweets.geojson",
             title: 'Tweet',
             popupTemplate: template_tweets,
             renderer: renderer_tweets
         });
 
         // Create GeoJSONLayer for seismogenic faults
-        var geojsonLayer_faults = new GeoJSONLayer({
-            url: "faults.geojson",
+        const geojsonLayer_faults = new GeoJSONLayer({
+            url: "../server/geoJSON_creation/geojson_data/faults.geojson",
             title: 'Probabili faglie attivate',
             popupTemplate: template_faults,
             renderer: renderer_faults,
@@ -112,8 +112,8 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
         });
 
         // Create GeoJSONLayer for area at risk
-        var geojsonLayer_risking_area = new GeoJSONLayer({
-            url: "area_at_risk.geojson",
+        const geojsonLayer_risking_area = new GeoJSONLayer({
+            url: "../server/geoJSON_creation/geojson_data/area_at_risk.geojson",
             title: 'Area a rischio',
             popupTemplate: template_risking_area,
             renderer: renderer_risking_area,
@@ -122,8 +122,8 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
         });
 
         // Create GeoJSONLayer for municipalities at risk
-        var geojsonLayer_municipalities = new GeoJSONLayer({
-            url: "municipalities.geojson",
+        const geojsonLayer_municipalities = new GeoJSONLayer({
+            url: "../server/geoJSON_creation/geojson_data/municipalities.geojson",
             title: 'Zone a rischio',
             popupTemplate: template_municipalities,
             renderer: renderer_municipalities
