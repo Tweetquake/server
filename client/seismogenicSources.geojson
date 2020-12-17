@@ -1,9 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "seismogenicSources",
-"features": [
-{ "type": "Feature", "properties": { "id": "ITIS027", "count": "3" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 13.819046, 42.177329 ], [ 13.990514, 42.050145 ], [ 13.938291, 42.011354 ], [ 13.766717, 42.138538 ], [ 13.819046, 42.177329 ] ] ] } },
-{ "type": "Feature", "properties": { "id": "ITIS094", "count": "3" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 13.833849, 42.222998 ], [ 13.979643, 42.224882 ], [ 13.980222, 42.200279 ], [ 13.834429, 42.198395 ], [ 13.833849, 42.222998 ] ] ] } },
-{ "type": "Feature", "properties": { "id": "ITIS132", "count": "3" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 13.569299, 42.334881 ], [ 13.726606, 42.247203 ], [ 13.677279, 42.198727 ], [ 13.519903, 42.286406 ], [ 13.569299, 42.334881 ] ] ] } }
-]
-}
