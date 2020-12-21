@@ -1,14 +1,13 @@
 import threading
 from datetime import datetime, timedelta
-
+from queue import Queue
 from typing import List
-
 
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from server.geoJSON_creation import geojson_creation
 from server.tweet_handling.tweet_filtering import TweetFilter
 from server.tweet_handling.tweet_retriever import put_tweets_in_queue_rt
-from queue import Queue
+
 
 class EarthquakeDetection:
     def __init__(self, number_of_earthquakes: int, time_window: timedelta):
@@ -34,7 +33,8 @@ class EarthquakeDetection:
         return is_detected
 
     def get_time_window_end(self):
-        return datetime.now()-self.time_window
+        return datetime.now() - self.time_window
+
 
 def __pop_tweets_and_datetimes(filtered_tweets, tweets_2_analyze, tweets_2_analyze_datetimes):
     filtered_tweet = filtered_tweets.get()
@@ -56,7 +56,7 @@ def __create_geojsons(tweet_list):
         geom = tweet.get_geometry()
         if geom is not None:
             gdal_points.append(geom)
-    if gdal_points:
+    if len(gdal_points) != 0:
         faults = faults_finder.find_candidate_faults(gdal_points)
         geojson_creation.object_list_to_geojson_file('faults', faults)
 
@@ -64,7 +64,6 @@ def __create_geojsons(tweet_list):
         area = riskfinder.find_risking_area(faults)
         geojson_creation.object_list_to_geojson_file('area_at_risk', [area])
         geojson_creation.object_list_to_geojson_file('municipalities', area.get_municipalities())
-
 
 
 def put_tweets_in_queue(tweets: Queue):
@@ -87,9 +86,10 @@ def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
         for positive in positives:
             filtered_tweets.put(positive)
 
+
 def analyze_filtered_tweets(filtered_tweets: Queue):
     # we detect an earthquake if 5 tweets are posted in the last 5 minutes
-    detection = EarthquakeDetection(number_of_earthquakes=5, time_window=timedelta(seconds=5*60))
+    detection = EarthquakeDetection(number_of_earthquakes=5, time_window=timedelta(seconds=5 * 60))
     tweets_2_analyze = []
     tweets_2_analyze_datetimes = []
     detected_previously = False

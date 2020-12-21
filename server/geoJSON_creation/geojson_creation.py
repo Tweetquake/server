@@ -1,5 +1,6 @@
 from osgeo import ogr
 
+
 def object_list_to_geojson_file(filename, object_list):
     file_path = 'server/geoJSON_creation/geojson_data/' + str(filename) + '.geojson'
     # Create the output Driver
@@ -58,4 +59,3 @@ def object_list_to_geojson_file(filename, object_list):
     else:
         outDataSource.CreateLayer(filename.replace("_", " ").title(), geom_type=0)
         print('created empty geojson file <' + filename + '>: there are no element in the list')
-

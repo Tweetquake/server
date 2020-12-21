@@ -1,7 +1,7 @@
+from osgeo import ogr
+
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
-from osgeo import osr, ogr
 from server.geoJSON_creation import geojson_creation
-import os
 
 if __name__ == "__main__":
     '''

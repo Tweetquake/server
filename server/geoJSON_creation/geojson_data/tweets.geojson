@@ -2,6 +2,6 @@
 "type": "FeatureCollection",
 "name": "Tweets",
 "features": [
-{ "type": "Feature", "properties": { "author": "Grazia Zacchetti", "place": "Milano, Lombardia", "text": "Pure il terremoto ci voleva! Io però non l’ho sentito... 😳", "time_posted": "2020-12-17 18:04:38" }, "geometry": { "type": "Point", "coordinates": [ 9.040628, 45.386726, 0.0 ] } }
+
 ]
 }

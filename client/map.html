@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta charset="utf-8"/>
+    <meta content="initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
     <title>Tweetquake</title>
     <style>
         html,
@@ -13,6 +13,7 @@
             height: 100%;
             width: 100%;
         }
+
         #sidebar {
             z-index: 99;
             position: absolute;
@@ -22,23 +23,24 @@
             background: rgba(0, 0, 0, 0.8);
             width: 320px;
         }
+
         #text {
             color: white;
             padding: 3%;
         }
     </style>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css"/>
+    <link href="https://js.arcgis.com/4.17/esri/themes/light/main.css" rel="stylesheet"/>
     <script src="https://js.arcgis.com/4.17/"></script>
     <script src="map.js"></script>
 </head>
 <body>
-    <div id="viewDiv">
-        <div id="sidebar" class="esri-widget">
-            <div id="text">
-                <h1>Earthquake Tweets live</h1>
-                <p>$$$$ i tweet vanno qui $$$$</p>
-            </div>
+<div id="viewDiv">
+    <div class="esri-widget" id="sidebar">
+        <div id="text">
+            <h1>Earthquake Tweets live</h1>
+            <p>$$$$ i tweet vanno qui $$$$</p>
         </div>
     </div>
+</div>
 </body>
 </html>
