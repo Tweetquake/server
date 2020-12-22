@@ -126,8 +126,6 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
         // Add widget to the bottom right corner of the view
         view.ui.add(layerList, "bottom-right");
 
-        view.padding.left = 320;
-
         function delay(n) {
             return new Promise(function (resolve) {
                 setTimeout(resolve, n * 1000);
@@ -135,58 +133,57 @@ require(["esri/Map", "esri/views/MapView", "esri/widgets/BasemapToggle",
         }
 
         async function refreshLayers() {
-            while (true){
-              var geojsonLayer_tweets = new GeoJSONLayer({
-                url: "tweets.geojson",
-                title: 'Tweet',
-                popupTemplate: template_tweets,
-                renderer: renderer_tweets
-            });
+            while (true) {
+                var geojsonLayer_tweets = new GeoJSONLayer({
+                    url: "tweets.geojson",
+                    title: 'Tweet',
+                    popupTemplate: template_tweets,
+                    renderer: renderer_tweets
+                });
 
-            // Create GeoJSONLayer for seismogenic faults
-            var geojsonLayer_faults = new GeoJSONLayer({
-                url: "faults.geojson",
-                title: 'Probabili faglie attivate',
-                popupTemplate: template_faults,
-                renderer: renderer_faults,
-                opacity: 0.5
-            });
+                // Create GeoJSONLayer for seismogenic faults
+                var geojsonLayer_faults = new GeoJSONLayer({
+                    url: "faults.geojson",
+                    title: 'Probabili faglie attivate',
+                    popupTemplate: template_faults,
+                    renderer: renderer_faults,
+                    opacity: 0.5
+                });
 
-            // Create GeoJSONLayer for area at risk
-            var geojsonLayer_risking_area = new GeoJSONLayer({
-                url: "area_at_risk.geojson",
-                title: 'Area a rischio',
-                popupTemplate: template_risking_area,
-                renderer: renderer_risking_area,
-                blendMode: "multiply",
-                opacity: 0.9
-            });
+                // Create GeoJSONLayer for area at risk
+                var geojsonLayer_risking_area = new GeoJSONLayer({
+                    url: "area_at_risk.geojson",
+                    title: 'Area a rischio',
+                    popupTemplate: template_risking_area,
+                    renderer: renderer_risking_area,
+                    blendMode: "multiply",
+                    opacity: 0.9
+                });
 
-            // Create GeoJSONLayer for municipalities at risk
-            var geojsonLayer_municipalities = new GeoJSONLayer({
-                url: "municipalities.geojson",
-                title: 'Zone a rischio',
-                popupTemplate: template_municipalities,
-                renderer: renderer_municipalities
-            });
+                // Create GeoJSONLayer for municipalities at risk
+                var geojsonLayer_municipalities = new GeoJSONLayer({
+                    url: "municipalities.geojson",
+                    title: 'Zone a rischio',
+                    popupTemplate: template_municipalities,
+                    renderer: renderer_municipalities
+                });
 
 
-          map.add(geojsonLayer_faults);
+                map.add(geojsonLayer_faults);
                 map.add(geojsonLayer_risking_area);
                 map.add(geojsonLayer_municipalities);
                 map.add(geojsonLayer_tweets);
 
 
+                await delay(120);
 
-            await delay(60);
+                geojsonLayer_risking_area.destroy();
+                geojsonLayer_faults.destroy();
+                geojsonLayer_municipalities.destroy();
+                geojsonLayer_tweets.destroy();
 
-            geojsonLayer_risking_area.destroy();
-            geojsonLayer_faults.destroy();
-            geojsonLayer_municipalities.destroy();
-            geojsonLayer_tweets.destroy();
-
-            };
-        };
+            }
+        }
 
         refreshLayers();
     }
