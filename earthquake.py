@@ -1,3 +1,4 @@
+import os
 import threading
 from queue import Queue
 
@@ -48,7 +49,10 @@ put_tweets_thread.start()
 filter_tweets_thread.start()
 analyzer_thread.start()
 
-run(host='localhost', port=8080, debug=True)
+if os.environ.get('APP_LOCATION') == 'heroku':
+    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+else:
+    run(host='localhost', port=8080, debug=True)
 
 put_tweets_thread.join()
 filter_tweets_thread.join()
