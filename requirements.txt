@@ -1,8 +1,7 @@
 bottle==0.12.19
-bottle-websocket==0.2.9
 certifi==2020.12.5
 chardet==3.0.4
-GDAL==3.0.4
+GDAL==2.4.0
 gevent==20.9.0
 gevent-websocket==0.10.1
 greenlet==0.4.17
@@ -22,6 +21,5 @@ six==1.15.0
 threadpoolctl==2.1.0
 tweepy==3.9.0
 urllib3==1.26.2
-websocket==0.2.1
 zope.event==4.5.0
 zope.interface==5.2.0
