@@ -163,6 +163,7 @@ class EarthquakeFaultsFinder:
 
     def find_candidate_faults(self, point_list):
         polygons = point_list
+        print('polygons: '+str(polygons))
         #polygons = self.__points2polygon.get_concentrated_areas(point_list)
         if polygons:
             sorted_by_probabilities, faults_geom = self.__find_all_candidate_faults(polygons)
