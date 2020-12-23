@@ -52,7 +52,6 @@ def __create_geojsons(tweet_list):
     faults_finder = earthquake_faults_finder.EarthquakeFaultsFinder()
     gdal_points = []
     for tweet in tweet_list:
-        print(tweet)
         geom = tweet.get_geometry()
         if geom is not None:
             gdal_points.append(geom)
@@ -80,10 +79,10 @@ def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
         # checks if queue has more than 1 tweet
         while not tweets.empty():
             tweet = tweets.get()
-            # print is only for testing
             tweet_array.append(tweet)
         positives = tweet_filter.get_all_positives(tweet_array)
         for positive in positives:
+            print(positive)
             filtered_tweets.put(positive)
 
 
