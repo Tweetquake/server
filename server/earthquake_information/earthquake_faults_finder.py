@@ -162,8 +162,8 @@ class EarthquakeFaultsFinder:
         self.__possible_faults.append(fault)
 
     def find_candidate_faults(self, point_list):
-        #polygons = self.__points2polygon.get_concentrated_areas(point_list)
         polygons = point_list
+        #polygons = self.__points2polygon.get_concentrated_areas(point_list)
         if polygons:
             sorted_by_probabilities, faults_geom = self.__find_all_candidate_faults(polygons)
             for i in range(0, len(sorted_by_probabilities)):
@@ -196,7 +196,7 @@ class EarthquakeFaultsFinder:
                 fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
                 fault_poly = ogr.Geometry(ogr.wkbPolygon)
                 fault_poly.AddGeometry(fault_geom)
-                inverse_distance = 1/(polygon.Distance(fault_poly)+0.000001)
+                inverse_distance = 1/(polygon.Distance(fault_poly)+0.0000001)
                 distances[fault.GetField(0)] = inverse_distance
                 sum = sum + inverse_distance
             for fault in layer_seism:
