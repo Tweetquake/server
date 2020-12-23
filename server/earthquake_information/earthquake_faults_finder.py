@@ -222,7 +222,7 @@ class EarthquakeFaultsFinder:
     def __find_nearest_faults(self, polygon, layer_seism):
 
         area = polygon.Buffer(self.__polygons_buffer)
-
+        print(area)
         faults = []
         for fault in layer_seism:
             fault_geom = fault.GetGeometryRef().GetGeometryRef(0)

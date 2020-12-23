@@ -2,11 +2,6 @@
 "type": "FeatureCollection",
 "name": "Tweets",
 "features": [
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Lucoli, Abruzzo", "text": "Ha fatto il terremoto", "time_posted": "2020-12-23 12:41:10" }, "geometry": { "type": "Point", "coordinates": [ 13.30062, 42.176784, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Pescina, Abruzzo", "text": "Ha fatto il terremoto", "time_posted": "2020-12-23 12:41:29" }, "geometry": { "type": "Point", "coordinates": [ 13.551151, 41.971592, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Il Vicoletto", "text": "Ha fatto il terremoto", "time_posted": "2020-12-23 12:41:42" }, "geometry": { "type": "Point", "coordinates": [ 13.406883, 42.344235, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Rieti, Lazio", "text": "Ha fatto il terremoto qua", "time_posted": "2020-12-23 12:42:13" }, "geometry": { "type": "Point", "coordinates": [ 12.711239, 42.307977, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Steant", "text": "Ha fatto il terremoto", "time_posted": "2020-12-23 12:42:30" }, "geometry": { "type": "Point", "coordinates": [ 13.410936, 42.347313, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "carl.att", "place": "Pescara, Abruzzo", "text": "Ha fatto il terremoto", "time_posted": "2020-12-23 12:43:18" }, "geometry": { "type": "Point", "coordinates": [ 13.765316, 42.073036, 0.0 ] } }
+{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Catania, Sicilia", "text": "Terremoto in Sicilia", "time_posted": "2020-12-23 13:17:48" }, "geometry": { "type": "Point", "coordinates": [ 14.93582, 37.357704, 0.0 ] } }
 ]
 }
