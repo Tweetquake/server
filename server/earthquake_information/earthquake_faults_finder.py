@@ -162,7 +162,8 @@ class EarthquakeFaultsFinder:
         self.__possible_faults.append(fault)
 
     def find_candidate_faults(self, point_list):
-        polygons = self.__points2polygon.get_concentrated_areas(point_list)
+        #polygons = self.__points2polygon.get_concentrated_areas(point_list)
+        polygons = point_list
         if polygons:
             sorted_by_probabilities, faults_geom = self.__find_all_candidate_faults(polygons)
             for i in range(0, len(sorted_by_probabilities)):
@@ -188,18 +189,18 @@ class EarthquakeFaultsFinder:
         # Find probability of seismogenic faults for each polygons (e.g. with dist of 20 km)
         polygons_probabilities = {}
         for polygon in polygons:
-            distances = {}  # dictionary fault -> distance from this polygon
+            distances = {} #dictionary fault -> distance from this polygon
             faults_probabilities = {}
             sum = 0
             for fault in layer_seism:
                 fault_geom = fault.GetGeometryRef().GetGeometryRef(0)
                 fault_poly = ogr.Geometry(ogr.wkbPolygon)
                 fault_poly.AddGeometry(fault_geom)
-                inverse_distance = 1 / (polygon.Distance(fault_poly) + 0.001)
+                inverse_distance = 1/(polygon.Distance(fault_poly)+0.000001)
                 distances[fault.GetField(0)] = inverse_distance
                 sum = sum + inverse_distance
             for fault in layer_seism:
-                faults_probabilities[fault.GetField(0)] = distances[fault.GetField(0)] / sum
+                faults_probabilities[fault.GetField(0)] = distances[fault.GetField(0)]/sum
             polygons_probabilities[polygon] = faults_probabilities
         probabilities_sum = {}
         faults_poly = {}
@@ -210,7 +211,7 @@ class EarthquakeFaultsFinder:
             prob_fault = 0
             for polygon in polygons:
                 prob_fault = prob_fault + polygons_probabilities[polygon][fault.GetField(0)]
-            prob_fault = prob_fault / len(polygons)
+            prob_fault = prob_fault/len(polygons)
             probabilities_sum[fault.GetField(0)] = prob_fault
             faults_poly[fault.GetField(0)] = fault_poly
 
