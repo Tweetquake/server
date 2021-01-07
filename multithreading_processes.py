@@ -1,3 +1,5 @@
+import os
+import shutil
 import threading
 from datetime import datetime, timedelta
 from queue import Queue
@@ -112,9 +114,24 @@ def analyze_filtered_tweets(filtered_tweets: Queue):
                 tweets_2_analyze_datetimes = []
         print("not detected")
         if detected_previously:
+            save_geoJSON_in_folder()
             tweets_2_analyze = []
             tweets_2_analyze_datetimes = []
             detected_previously = False
+
+def save_geoJSON_in_folder():
+    # make dir with datatime as name
+    directory = str(datetime.now())
+    parent_dir = "server/geoJSON_creation/geojson_data/"
+    path = os.path.join(parent_dir, directory)
+    os.mkdir(path)
+
+    # copy file to folder
+    files = ['area_at_risk.geojson', 'faults.geojson', 'municipalities.geojson', 'tweets.geojson']
+    for file in files:
+        file_to_copy = os.path.join(parent_dir, file)
+        shutil.copy(file_to_copy, path)
+
 
 
 if __name__ == "__main__":
