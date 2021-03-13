@@ -2,12 +2,6 @@
 "type": "FeatureCollection",
 "name": "Tweets",
 "features": [
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Siracusa, Sicilia", "text": "Ha fatto il terremoto!!", "time_posted": "2021-01-07 15:51:01" }, "geometry": { "type": "Point", "coordinates": [ 15.082808, 36.947679, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Catania, Sicilia", "text": "Ha fatto il terremoto!!!", "time_posted": "2021-01-07 15:51:28" }, "geometry": { "type": "Point", "coordinates": [ 14.93582, 37.357704, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Agrigento, Sicilia", "text": "Ha fatto il terremoto??", "time_posted": "2021-01-07 15:51:41" }, "geometry": { "type": "Point", "coordinates": [ 12.317242, 35.49145, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Gela, Sicilia", "text": "Avete sentito il terremoto?", "time_posted": "2021-01-07 15:51:56" }, "geometry": { "type": "Point", "coordinates": [ 14.114758, 37.001509, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Trapani, Sicilia", "text": "Avete sentito il terremoto??", "time_posted": "2021-01-07 15:52:21" }, "geometry": { "type": "Point", "coordinates": [ 12.479239, 37.836631, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Taormina, Sicilia", "text": "Ha fatto il terremoto", "time_posted": "2021-01-07 15:52:58" }, "geometry": { "type": "Point", "coordinates": [ 15.223563, 37.817828, 0.0 ] } },
-{ "type": "Feature", "properties": { "author": "Lorenza Pasquini", "place": "Marsala, Sicilia", "text": "Ha fatto il terremoto", "time_posted": "2021-01-07 15:53:34" }, "geometry": { "type": "Point", "coordinates": [ 12.424116, 37.713977, 0.0 ] } }
+
 ]
 }

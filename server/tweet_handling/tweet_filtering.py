@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from tweepy import Status
+import advertools as adv
 
 
 def get_tweet_text(tweet: Status):
@@ -111,9 +112,12 @@ class TweetEarthquakeSA(FilteringMethod):
             with open(self.vectorizer_path, 'rb') as fid:
                 self.vectorizer = load(fid)
         else:
-            self.classifier = svm.SVC(kernel='linear', C=3.3, gamma='auto')
-            self.vectorizer = TfidfVectorizer(min_df=5,
-                                              max_df=0.8,
+            stop_words = sorted(adv.stopwords['italian'])
+            stop_words.append('terremoto')
+            self.classifier = svm.SVC(kernel='rbf', C=5.0, gamma='scale')
+            self.vectorizer = TfidfVectorizer(min_df=0.00001,
+                                              max_df=0.9,
+                                              stop_words=stop_words,
                                               sublinear_tf=True,
                                               use_idf=True)
 
@@ -172,9 +176,9 @@ if __name__ == "__main__":
     '''
     data = pd.read_csv(
         "server/tweet_handling/tweet_earthquake_sentiment_analysis_data/earthquake_sentiment_analysis_dataset"
-        "/earthquake_dataset_SA.csv")
+        "/earthquake_huge_dataset.csv")
 
-    train_data, test_data = train_test_split(data, test_size=0.05)
+    train_data, test_data = train_test_split(data, test_size=0.1)
 
     detector = TweetEarthquakeSA(get_existing=False)
     detector.train(train_data=train_data, save_to_file=True)
@@ -183,8 +187,12 @@ if __name__ == "__main__":
     print('positive: ', report['pos'])
     print('negative: ', report['neg'])
     texts = ['ha fatto il terremoto', 'terremoto in politica',
-             'Scossa: è crollato un ponte davanti casa mia #terremoto']
+             'Scossa: è crollato un ponte davanti ai miei occhi #terremoto']
     df = pd.DataFrame(texts, columns=['Content'])
     prediction = detector.predict(df)
     print()
     print(prediction)
+
+
+
+    #print(detector.vectorizer.get_feature_names())

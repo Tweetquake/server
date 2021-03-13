@@ -28,6 +28,7 @@ class Stream2Queue(tweepy.StreamListener):
         @return:
         '''
         self.tweets.put(TweetUsefulInfos(status))
+        print(status.text)
 
 
 def __keys(name):
@@ -35,11 +36,12 @@ def __keys(name):
     @param name: API key (string)
     @return: API value (string)
     '''
-    keychain = {'TwitKEY': 'nsq5BVLFe5xheMa9NO37poiob',
-                'TwitSECRET': 'v2R6uHuzqkk68oM0P0KUAs0XkBezze3uBcujT2Dmlt6GclQJTh',
-                'TwitTOKEN': '1270774916388917249-xDVbbwOTJk8kJyjG1SUs3l0NzSRYNg',
-                'TwitTOKSEC': '24qRoFKDHiQb8D7tbhMdY56KBm8wYIWpDngBoLW0IgaqV'}
-    return keychain[name]
+    with open("keys.txt", "r") as f:
+        keychain = {'TwitKEY': f.readline().strip(),
+                    'TwitSECRET': f.readline().strip(),
+                    'TwitTOKEN': f.readline().strip(),
+                    'TwitTOKSEC': f.readline().strip()}
+        return keychain[name]
 
 
 def __get_API():
