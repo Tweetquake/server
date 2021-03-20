@@ -45,14 +45,16 @@ put_tweets_thread = threading.Thread(target=put_tweets_in_queue, args=(tweets,))
 filter_tweets_thread = threading.Thread(target=filter_tweets_from_queue, args=(tweets, filtered_tweets,))
 analyzer_thread = threading.Thread(target=analyze_filtered_tweets, args=(filtered_tweets,))
 
-put_tweets_thread.start()
-filter_tweets_thread.start()
-analyzer_thread.start()
-
 if os.environ.get('APP_LOCATION') == 'heroku':
     run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 else:
     run(host='localhost', port=8080, debug=True)
+
+
+put_tweets_thread.start()
+filter_tweets_thread.start()
+analyzer_thread.start()
+
 
 put_tweets_thread.join()
 filter_tweets_thread.join()

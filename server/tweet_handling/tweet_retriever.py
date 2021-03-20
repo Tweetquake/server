@@ -1,7 +1,5 @@
-from queue import Queue
-
 import tweepy
-
+from queue import Queue
 from server.tweet_handling.tweet_filtering import TweetUsefulInfos
 
 

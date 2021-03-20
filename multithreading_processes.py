@@ -7,6 +7,7 @@ from typing import List
 
 from server.earthquake_information import earthquake_faults_finder, risking_area_finder
 from server.geoJSON_creation import geojson_creation
+from server.tweet_handling.EarthquakeTweetFM.EarthquakeTweetFM import EarthquakeTweetFM
 from server.tweet_handling.tweet_filtering import TweetFilter
 from server.tweet_handling.tweet_retriever import put_tweets_in_queue_rt
 
@@ -72,7 +73,7 @@ def put_tweets_in_queue(tweets: Queue):
 
 
 def filter_tweets_from_queue(tweets: Queue, filtered_tweets: Queue):
-    tweet_filter = TweetFilter()
+    tweet_filter = TweetFilter(EarthquakeTweetFM())
     while True:
         tweet_array = []
         # blocks until the queue is not empty
